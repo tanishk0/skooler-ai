@@ -1,14 +1,17 @@
 import { extractText, extractImages } from "unpdf";
 import { parseImage } from "./image";
 
-export async function parsePdf(pdf: ArrayBuffer | Uint8Array | Blob): Promise<string> {
+export async function parsePdf(pdf: ArrayBuffer | Uint8Array | Blob | Buffer): Promise<string> {
   let buffer: Uint8Array;
   if (pdf instanceof Blob) {
     buffer = new Uint8Array(await pdf.arrayBuffer());
   } else if (pdf instanceof ArrayBuffer) {
     buffer = new Uint8Array(pdf);
+  } else if (typeof pdf === "object" && pdf !== null && "buffer" in pdf) {
+    const b = pdf as any;
+    buffer = new Uint8Array(b.buffer, b.byteOffset, b.byteLength);
   } else {
-    buffer = pdf;
+    buffer = new Uint8Array(pdf as any);
   }
 
   const { text, totalPages } = await extractText(buffer);
