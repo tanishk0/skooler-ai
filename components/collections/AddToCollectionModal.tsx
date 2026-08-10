@@ -91,7 +91,7 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150 font-sans">
       <div
-        className="w-full max-w-sm bg-white rounded-md shadow-2xl border border-zinc-200 overflow-hidden"
+        className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

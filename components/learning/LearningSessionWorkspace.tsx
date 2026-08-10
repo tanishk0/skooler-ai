@@ -3,8 +3,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import LearningRoadmap from "./LearningRoadmap";
 import LearningTimeline from "./LearningTimeline";
+import Sidebar from "@/components/sidebar/Sidebar";
+import MobileHeader from "@/components/layout/MobileHeader";
+import DrawerOverlay from "@/components/layout/DrawerOverlay";
 import { Concept, LearningEvent, InteractionResponse, LearningState } from "@/lib/ai/types";
-import { Loader2, AlertCircle, FileText, X } from "lucide-react";
+import { Loader2, AlertCircle, FileText, X, BookOpen, Menu } from "lucide-react";
 
 export interface SerializedSession {
   id: string;
@@ -22,14 +25,18 @@ interface LearningSessionWorkspaceProps {
 }
 
 export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> = ({
+  userName = "User",
   initialSession,
   initialEvents,
+  recentSessions = [],
 }) => {
   const [session, setSession] = useState<SerializedSession>(initialSession);
   const [events, setEvents] = useState<LearningEvent[]>(initialEvents);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showTranscript, setShowTranscript] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isMobileRoadmapOpen, setIsMobileRoadmapOpen] = useState(false);
 
   const mainScrollRef = useRef<HTMLDivElement>(null);
 
@@ -182,31 +189,99 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f9fafb] overflow-hidden font-sans">
-      {/* Left Sidebar: Syllabus & Roadmap */}
-      <LearningRoadmap
-        topic={session.topic}
-        concepts={concepts}
-        modules={modules}
-        currentConceptIndex={currentIdx}
-        currentModuleIndex={currentModuleIdx}
-        isComplete={isComplete}
-        onRenameConcept={handleRenameConcept}
-        onDeleteConcept={handleDeleteConcept}
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#f9fafb] font-sans overflow-x-hidden">
+      {/* Mobile Top Header */}
+      <MobileHeader
+        title={session.topic}
+        onMenuClick={() => setIsMobileSidebarOpen(true)}
+        rightAction={
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsMobileRoadmapOpen(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors cursor-pointer"
+              title="Open Syllabus Roadmap"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Syllabus</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowTranscript(!showTranscript)}
+              className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
+              title="Session Log"
+            >
+              <FileText className="w-4 h-4 text-slate-600" />
+            </button>
+          </div>
+        }
       />
 
+      {/* Mobile Sidebar Drawer Overlay */}
+      <DrawerOverlay
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+        title="Navigation"
+      >
+        <Sidebar
+          userName={userName}
+          recents={recentSessions.map((s) => ({
+            id: s.id,
+            title: s.topic,
+            href: `/learn/${s.id}`,
+          }))}
+          activeItem={session.topic}
+          onSelectItem={() => setIsMobileSidebarOpen(false)}
+          className="w-full border-r-0 h-full"
+        />
+      </DrawerOverlay>
+
+      {/* Mobile Syllabus Roadmap Drawer Overlay */}
+      <DrawerOverlay
+        isOpen={isMobileRoadmapOpen}
+        onClose={() => setIsMobileRoadmapOpen(false)}
+        position="right"
+        title="Syllabus & Roadmap"
+      >
+        <LearningRoadmap
+          topic={session.topic}
+          concepts={concepts}
+          modules={modules}
+          currentConceptIndex={currentIdx}
+          currentModuleIndex={currentModuleIdx}
+          isComplete={isComplete}
+          onRenameConcept={handleRenameConcept}
+          onDeleteConcept={handleDeleteConcept}
+          className="w-full border-r-0 h-full p-4"
+        />
+      </DrawerOverlay>
+
+      {/* Desktop Left Sidebar: Syllabus & Roadmap */}
+      <div className="hidden lg:block shrink-0 h-full">
+        <LearningRoadmap
+          topic={session.topic}
+          concepts={concepts}
+          modules={modules}
+          currentConceptIndex={currentIdx}
+          currentModuleIndex={currentModuleIdx}
+          isComplete={isComplete}
+          onRenameConcept={handleRenameConcept}
+          onDeleteConcept={handleDeleteConcept}
+        />
+      </div>
+
       {/* Main Content Workspace */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden bg-white">
-        {/* Top Navigation Bar */}
-        <header className="w-full px-8 py-3.5 border-b border-slate-100/90 bg-white flex items-center justify-between shadow-2xs shrink-0 font-sans">
-          <div className="flex flex-wrap items-center gap-2.5 text-xs">
-            <h2 className="font-bold tracking-wider text-slate-900 uppercase text-xs">
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-white min-w-0">
+        {/* Desktop Top Navigation Bar */}
+        <header className="hidden lg:flex w-full px-8 py-3.5 border-b border-slate-100/90 bg-white items-center justify-between shadow-2xs shrink-0 font-sans min-w-0">
+          <div className="flex flex-wrap items-center gap-2.5 text-xs min-w-0 flex-1 pr-4">
+            <h2 className="font-bold tracking-wider text-slate-900 uppercase text-xs truncate max-w-[200px]">
               {session.topic}
             </h2>
             {currentModule && (
               <>
                 <span className="text-slate-300">•</span>
-                <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100/80">
+                <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100/80 truncate max-w-[200px]">
                   {currentModule.name} ({currentModuleIdx + 1}/{modules?.length || 1})
                 </span>
               </>
@@ -219,7 +294,7 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
                 </span>
               </>
             )}
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
               <span className={`w-1.5 h-1.5 rounded-full ${isComplete ? "bg-emerald-500" : "bg-indigo-600"}`} />
               {isComplete ? "Completed" : "Active Session"}
             </span>
@@ -228,7 +303,7 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
           <button
             type="button"
             onClick={() => setShowTranscript(!showTranscript)}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer shrink-0"
           >
             <FileText className="w-3.5 h-3.5 text-slate-500" />
             <span>Session Log</span>
@@ -238,9 +313,9 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
         {/* Learning Content Stream */}
         <main
           ref={mainScrollRef}
-          className="flex-1 overflow-y-auto p-6 sm:p-10 flex flex-col items-center"
+          className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 flex flex-col items-center min-w-0 max-w-full"
         >
-          <div className="w-full max-w-3xl flex flex-col gap-6 py-4">
+          <div className="w-full max-w-3xl flex flex-col gap-6 py-2 sm:py-4 min-w-0">
             {errorMessage && (
               <div className="w-full p-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />

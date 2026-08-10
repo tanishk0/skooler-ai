@@ -124,21 +124,21 @@ export const LearningInput: React.FC<LearningInputProps> = ({
 
         {/* Attached Files List */}
         {files.length > 0 && (
-          <div className="flex flex-wrap gap-2 py-2 border-t border-slate-100 my-2">
+          <div className="flex flex-wrap gap-2 py-2 border-t border-slate-100 my-2 min-w-0">
             {files.map((file, idx) => (
               <div
                 key={idx}
-                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-800 text-xs font-medium"
+                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-800 text-xs font-medium min-w-0 max-w-full"
               >
                 <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                <span className="max-w-[180px] truncate">{file.name}</span>
-                <span className="text-slate-400 text-[10px]">
+                <span className="max-w-[120px] sm:max-w-[200px] truncate min-w-0">{file.name}</span>
+                <span className="text-slate-400 text-[10px] shrink-0">
                   ({formatFileSize(file.size)})
                 </span>
                 <button
                   type="button"
                   onClick={() => removeFile(idx)}
-                  className="p-0.5 rounded-md hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                  className="p-0.5 rounded-md hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -148,8 +148,8 @@ export const LearningInput: React.FC<LearningInputProps> = ({
         )}
 
         {/* Bottom Toolbar */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-100/60">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100/60 min-w-0">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -171,7 +171,7 @@ export const LearningInput: React.FC<LearningInputProps> = ({
           <button
             type="submit"
             disabled={isLoading || (!text.trim() && files.length === 0)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm shadow-xs disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm shadow-xs disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0"
           >
             {isLoading ? (
               <>
@@ -189,14 +189,14 @@ export const LearningInput: React.FC<LearningInputProps> = ({
       </form>
 
       {/* Suggestion Chip */}
-      <div className="flex items-center gap-2 text-xs">
-        <div className="flex items-center gap-1 text-indigo-600 font-bold">
+      <div className="flex flex-wrap items-center gap-2 text-xs min-w-0">
+        <div className="flex items-center gap-1 text-indigo-600 font-bold shrink-0">
           <span>Try:</span>
         </div>
         <button
           type="button"
           onClick={() => setText(`"${SUGGESTION}"`)}
-          className="bg-indigo-50/90 hover:bg-indigo-100 text-indigo-700 font-medium text-xs px-3.5 py-1.5 rounded-md cursor-pointer transition-colors"
+          className="bg-indigo-50/90 hover:bg-indigo-100 text-indigo-700 font-medium text-xs px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-md cursor-pointer transition-colors text-left break-words max-w-full"
         >
           &ldquo;{SUGGESTION}&rdquo;
         </button>
