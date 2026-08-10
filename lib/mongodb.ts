@@ -8,12 +8,25 @@ const uri = process.env.MONGODB_URI;
 
 const globalWithMongo = globalThis as typeof globalThis & {
   _mongoClient?: MongoClient;
+  _mongoClientPromise?: Promise<MongoClient>;
 };
 
-const client = globalWithMongo._mongoClient ?? new MongoClient(uri);
-
-if (process.env.NODE_ENV !== "production") {
+if (!globalWithMongo._mongoClient) {
+  const client = new MongoClient(uri, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  });
   globalWithMongo._mongoClient = client;
+  globalWithMongo._mongoClientPromise = client.connect().catch((err) => {
+    delete globalWithMongo._mongoClient;
+    delete globalWithMongo._mongoClientPromise;
+    throw err;
+  });
 }
 
+const client = globalWithMongo._mongoClient;
+const clientPromise = globalWithMongo._mongoClientPromise;
+
 export default client;
+export { clientPromise };
