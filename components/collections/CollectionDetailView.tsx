@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar, { RecentItem, CollectionItem } from "@/components/sidebar/Sidebar";
+import MobileHeader from "@/components/layout/MobileHeader";
+import DrawerOverlay from "@/components/layout/DrawerOverlay";
 import LearningInput from "@/components/learning/LearningInput";
 import AddToCollectionModal from "./AddToCollectionModal";
 import CreateCollectionModal from "./CreateCollectionModal";
@@ -62,6 +64,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -204,87 +207,168 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f9fafb] overflow-hidden font-sans">
-      <Sidebar
-        userName={userName}
-        recents={sidebarRecents}
-        collections={sidebarCollections}
-        activeItem={collection.name}
-        onSelectItem={(item) => {
-          if (typeof item === "string") {
-            if (item === "Dashboard") router.push("/");
-          } else if (item.href) {
-            router.push(item.href);
-          }
-        }}
-        onNewCollection={() => setIsCreateModalOpen(true)}
-        onRenameRecent={async (item, newTitle) => {
-          if (item.id && !item.id.startsWith("recent-")) {
-            await fetch(`/api/learning/sessions/${item.id}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ topic: newTitle }),
-            });
-            setSessions((prev) =>
-              prev.map((s) => (s.id === item.id ? { ...s, topic: newTitle } : s))
-            );
-          }
-          setSidebarRecents((prev) =>
-            prev.map((r) => (r.id === item.id ? { ...r, title: newTitle } : r))
-          );
-        }}
-        onDeleteRecent={async (item) => {
-          if (item.id && !item.id.startsWith("recent-")) {
-            await fetch(`/api/learning/sessions/${item.id}`, { method: "DELETE" });
-          }
-          setSidebarRecents((prev) => prev.filter((r) => r.id !== item.id));
-        }}
-        onRenameCollection={async (item, newName) => {
-          if (item.id) {
-            await fetch(`/api/collections/${item.id}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ name: newName }),
-            });
-            if (item.id === collection.id) {
-              setCollection((prev) => ({ ...prev, name: newName }));
-            }
-          }
-          setSidebarCollections((prev) =>
-            prev.map((c) => (c.id === item.id ? { ...c, name: newName } : c))
-          );
-        }}
-        onDeleteCollection={async (item) => {
-          if (item.id) {
-            await fetch(`/api/collections/${item.id}`, { method: "DELETE" });
-            if (item.id === collection.id) {
-              router.push("/");
-            }
-          }
-          setSidebarCollections((prev) => prev.filter((c) => c.id !== item.id));
-        }}
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#f9fafb] font-sans overflow-x-hidden">
+      {/* Mobile Header */}
+      <MobileHeader
+        title={collection.name}
+        onMenuClick={() => setIsMobileSidebarOpen(true)}
       />
 
-      <main className="flex-1 flex flex-col h-screen bg-[#f9fafb] overflow-y-auto">
-        <div className="w-full max-w-4xl mx-auto p-6 sm:p-10 flex flex-col gap-8">
+      {/* Mobile Sidebar Drawer */}
+      <DrawerOverlay
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+        title="Navigation"
+      >
+        <Sidebar
+          userName={userName}
+          recents={sidebarRecents}
+          collections={sidebarCollections}
+          activeItem={collection.name}
+          onSelectItem={(item) => {
+            setIsMobileSidebarOpen(false);
+            if (typeof item === "string") {
+              if (item === "Dashboard") router.push("/");
+            } else if (item.href) {
+              router.push(item.href);
+            }
+          }}
+          onNewCollection={() => {
+            setIsMobileSidebarOpen(false);
+            setIsCreateModalOpen(true);
+          }}
+          onRenameRecent={async (item, newTitle) => {
+            if (item.id && !item.id.startsWith("recent-")) {
+              await fetch(`/api/learning/sessions/${item.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ topic: newTitle }),
+              });
+              setSessions((prev) =>
+                prev.map((s) => (s.id === item.id ? { ...s, topic: newTitle } : s))
+              );
+            }
+            setSidebarRecents((prev) =>
+              prev.map((r) => (r.id === item.id ? { ...r, title: newTitle } : r))
+            );
+          }}
+          onDeleteRecent={async (item) => {
+            if (item.id && !item.id.startsWith("recent-")) {
+              await fetch(`/api/learning/sessions/${item.id}`, { method: "DELETE" });
+            }
+            setSidebarRecents((prev) => prev.filter((r) => r.id !== item.id));
+          }}
+          onRenameCollection={async (item, newName) => {
+            if (item.id) {
+              await fetch(`/api/collections/${item.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newName }),
+              });
+              if (item.id === collection.id) {
+                setCollection((prev) => ({ ...prev, name: newName }));
+              }
+            }
+            setSidebarCollections((prev) =>
+              prev.map((c) => (c.id === item.id ? { ...c, name: newName } : c))
+            );
+          }}
+          onDeleteCollection={async (item) => {
+            if (item.id) {
+              await fetch(`/api/collections/${item.id}`, { method: "DELETE" });
+              if (item.id === collection.id) {
+                router.push("/");
+              }
+            }
+            setSidebarCollections((prev) => prev.filter((c) => c.id !== item.id));
+          }}
+          className="w-full border-r-0 h-full"
+        />
+      </DrawerOverlay>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block shrink-0 h-full">
+        <Sidebar
+          userName={userName}
+          recents={sidebarRecents}
+          collections={sidebarCollections}
+          activeItem={collection.name}
+          onSelectItem={(item) => {
+            if (typeof item === "string") {
+              if (item === "Dashboard") router.push("/");
+            } else if (item.href) {
+              router.push(item.href);
+            }
+          }}
+          onNewCollection={() => setIsCreateModalOpen(true)}
+          onRenameRecent={async (item, newTitle) => {
+            if (item.id && !item.id.startsWith("recent-")) {
+              await fetch(`/api/learning/sessions/${item.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ topic: newTitle }),
+              });
+              setSessions((prev) =>
+                prev.map((s) => (s.id === item.id ? { ...s, topic: newTitle } : s))
+              );
+            }
+            setSidebarRecents((prev) =>
+              prev.map((r) => (r.id === item.id ? { ...r, title: newTitle } : r))
+            );
+          }}
+          onDeleteRecent={async (item) => {
+            if (item.id && !item.id.startsWith("recent-")) {
+              await fetch(`/api/learning/sessions/${item.id}`, { method: "DELETE" });
+            }
+            setSidebarRecents((prev) => prev.filter((r) => r.id !== item.id));
+          }}
+          onRenameCollection={async (item, newName) => {
+            if (item.id) {
+              await fetch(`/api/collections/${item.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: newName }),
+              });
+              if (item.id === collection.id) {
+                setCollection((prev) => ({ ...prev, name: newName }));
+              }
+            }
+            setSidebarCollections((prev) =>
+              prev.map((c) => (c.id === item.id ? { ...c, name: newName } : c))
+            );
+          }}
+          onDeleteCollection={async (item) => {
+            if (item.id) {
+              await fetch(`/api/collections/${item.id}`, { method: "DELETE" });
+              if (item.id === collection.id) {
+                router.push("/");
+              }
+            }
+            setSidebarCollections((prev) => prev.filter((c) => c.id !== item.id));
+          }}
+        />
+      </div>
+
+      <main className="flex-1 flex flex-col items-center p-4 sm:p-6 lg:p-10 min-w-0 max-w-full overflow-y-auto">
+        <div className="w-full max-w-4xl mx-auto flex flex-col gap-6 sm:gap-8 min-w-0">
           {/* Header Card */}
-          <div className="flex flex-col gap-4 p-6 rounded-md bg-white border border-slate-200/80 shadow-xs relative">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                <div className="p-3 rounded-md bg-indigo-600 text-white shadow-md shadow-indigo-200 shrink-0">
-                  <Folder className="w-6 h-6" />
+          <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-md bg-white border border-slate-200/80 shadow-xs relative min-w-0">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4 min-w-0">
+              <div className="flex items-start gap-3 sm:gap-3.5 min-w-0 flex-1">
+                <div className="p-2.5 sm:p-3 rounded-md bg-indigo-600 text-white shadow-md shadow-indigo-200 shrink-0">
+                  <Folder className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
 
                 {isEditingCollection ? (
                   <form
                     onSubmit={handleSaveCollectionEdit}
-                    className="flex flex-col gap-2 flex-1 max-w-md"
+                    className="flex flex-col gap-2 flex-1 max-w-md min-w-0"
                   >
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="px-3 py-1.5 text-xl font-bold border border-indigo-300 rounded-md text-zinc-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                      className="px-3 py-1.5 text-lg sm:text-xl font-bold border border-indigo-300 rounded-md text-zinc-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-sans"
                       autoFocus
                     />
                     <textarea
@@ -292,7 +376,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                       onChange={(e) => setEditDesc(e.target.value)}
                       placeholder="Add a description..."
                       rows={2}
-                      className="px-3 py-1 text-xs border border-zinc-300 rounded-md text-zinc-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
+                      className="px-3 py-1 text-xs border border-zinc-300 rounded-md text-zinc-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none font-sans"
                     />
                     <div className="flex items-center gap-2 mt-1">
                       <button
@@ -311,9 +395,9 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                     </div>
                   </form>
                 ) : (
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                      <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">
+                  <div className="flex flex-col gap-1 min-w-0 flex-1">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight break-words min-w-0">
                         {collection.name}
                       </h1>
                       <button
@@ -322,19 +406,19 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                           setEditDesc(collection.description);
                           setIsEditingCollection(true);
                         }}
-                        className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200/50 rounded-md transition-colors cursor-pointer"
+                        className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200/50 rounded-md transition-colors cursor-pointer shrink-0"
                         title="Edit Collection"
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                     {collection.description && (
-                      <p className="text-xs text-zinc-600 max-w-xl">
+                      <p className="text-xs text-zinc-600 max-w-xl break-words min-w-0">
                         {collection.description}
                       </p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-800">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-800 shrink-0">
                         <BookOpen className="w-3.5 h-3.5" />
                         {sessions.length}{" "}
                         {sessions.length === 1 ? "topic" : "topics"}
@@ -345,7 +429,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
               </div>
 
               {/* Collection Action Options */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-start">
                 <button
                   type="button"
                   onClick={() => setIsDeleteCollectionModalOpen(true)}
@@ -353,7 +437,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                   title="Delete Collection"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Delete Collection</span>
+                  <span>Delete Collection</span>
                 </button>
               </div>
             </div>

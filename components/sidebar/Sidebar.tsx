@@ -51,6 +51,7 @@ export interface SidebarProps {
   onAddToCollection?: (item: RecentItem) => void | Promise<void>;
   onRenameCollection?: (item: CollectionItem, newName: string) => void | Promise<void>;
   onDeleteCollection?: (item: CollectionItem) => void | Promise<void>;
+  className?: string;
 }
 
 const DEFAULT_RECENTS: RecentItem[] = [
@@ -80,6 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onAddToCollection,
   onRenameCollection,
   onDeleteCollection,
+  className = "",
 }) => {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -191,7 +193,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       ref={containerRef}
-      className="w-64 h-screen bg-white border-r border-slate-100/90 flex flex-col justify-between select-none shrink-0 font-sans text-sm text-slate-700"
+      className={`w-64 h-full min-h-screen bg-white border-r border-slate-100/90 flex flex-col justify-between select-none shrink-0 font-sans text-sm text-slate-700 ${className}`}
     >
       {/* Header & Main Nav */}
       <div className="flex flex-col flex-1 overflow-y-auto">

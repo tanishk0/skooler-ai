@@ -23,6 +23,7 @@ interface LearningRoadmapProps {
   isComplete?: boolean;
   onRenameConcept?: (concept: Concept, newName: string) => void | Promise<void>;
   onDeleteConcept?: (concept: Concept) => void | Promise<void>;
+  className?: string;
 }
 
 export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
@@ -34,6 +35,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
   isComplete = false,
   onRenameConcept,
   onDeleteConcept,
+  className = "",
 }) => {
   const [concepts, setConcepts] = useState<Concept[]>(initialConcepts);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
@@ -111,31 +113,31 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
   return (
     <aside
       ref={containerRef}
-      className="w-72 sm:w-80 h-screen bg-white border-r border-slate-100/90 flex flex-col justify-between shrink-0 select-none p-6 font-sans overflow-y-auto"
+      className={`w-72 sm:w-80 h-full min-h-screen bg-white border-r border-slate-100/90 flex flex-col justify-between shrink-0 select-none p-5 sm:p-6 font-sans overflow-y-auto min-w-0 ${className}`}
     >
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 min-w-0">
         {/* Back to Dashboard Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Dashboard</span>
         </Link>
 
         {/* Topic Title & Progress Ratio */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-0">
           {modules && modules.length > 0 ? (
-            <div className="flex items-center justify-between text-[11px] font-bold tracking-wider text-indigo-700 uppercase">
-              <span>Module {currentModuleIndex + 1} of {modules.length}</span>
-              <span className="text-slate-400 font-mono text-[10px]">{currentRatio} concepts</span>
+            <div className="flex items-center justify-between text-[11px] font-bold tracking-wider text-indigo-700 uppercase min-w-0">
+              <span className="truncate">Module {currentModuleIndex + 1} of {modules.length}</span>
+              <span className="text-slate-400 font-mono text-[10px] shrink-0 ml-2">{currentRatio} concepts</span>
             </div>
           ) : (
-            <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase">
+            <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase truncate">
               {topic}
             </span>
           )}
-          <h1 className="font-serif text-xl font-bold text-slate-900 tracking-tight leading-snug">
+          <h1 className="font-serif text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug break-words min-w-0">
             {topic}
           </h1>
 
