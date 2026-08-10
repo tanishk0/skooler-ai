@@ -25,11 +25,11 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
 
   const variantStyles = {
     primary:
-      "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-md shadow-indigo-500/20 focus:ring-indigo-500/30",
+      "bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs hover:shadow-md hover:shadow-indigo-500/15 focus:ring-indigo-100",
     secondary:
-      "bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 focus:ring-zinc-500/20",
+      "bg-slate-900 hover:bg-slate-800 text-white focus:ring-slate-100",
     outline:
-      "bg-transparent border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 focus:ring-zinc-500/20",
+      "bg-white border border-slate-200/90 hover:bg-slate-50 text-slate-700 hover:text-slate-900 hover:border-slate-300 focus:ring-slate-100 shadow-2xs",
   };
 
   return (
