@@ -45,7 +45,9 @@ function getTrustedOrigins(): string[] {
 }
 
 export const auth = betterAuth({
-  database: mongodbAdapter(client.db()),
+  database: mongodbAdapter(client.db(), {
+    client,
+  }),
 
   emailAndPassword: {
     enabled: true,
