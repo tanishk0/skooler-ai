@@ -6,19 +6,14 @@ if (!process.env.MONGODB_URI) {
 
 const uri = process.env.MONGODB_URI;
 
-let client: MongoClient;
+const globalWithMongo = globalThis as typeof globalThis & {
+  _mongoClient?: MongoClient;
+};
 
-if (process.env.NODE_ENV === "development") {
-  const globalWithMongo = global as typeof globalThis & {
-    _mongoClient?: MongoClient;
-  };
+const client = globalWithMongo._mongoClient ?? new MongoClient(uri);
 
-  if (!globalWithMongo._mongoClient) {
-    globalWithMongo._mongoClient = new MongoClient(uri);
-  }
-  client = globalWithMongo._mongoClient;
-} else {
-  client = new MongoClient(uri);
+if (process.env.NODE_ENV !== "production") {
+  globalWithMongo._mongoClient = client;
 }
 
 export default client;
