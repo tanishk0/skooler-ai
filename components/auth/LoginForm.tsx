@@ -95,11 +95,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           required
         />
 
-        <div className="flex items-center justify-between text-xs pt-1">
-          <label className="flex items-center gap-2 cursor-pointer text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center justify-between text-xs pt-0.5">
+          <label className="flex items-center gap-2 cursor-pointer text-slate-600 hover:text-slate-800 transition-colors">
             <input
               type="checkbox"
-              className="rounded border-zinc-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500"
+              className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"
             />
             Remember me
           </label>
