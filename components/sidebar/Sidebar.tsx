@@ -54,24 +54,11 @@ export interface SidebarProps {
   className?: string;
 }
 
-const DEFAULT_RECENTS: RecentItem[] = [
-  { id: "1", title: "fashion and personal styling", timeAgo: "12 min ago" },
-  { id: "2", title: "pragmatism", timeAgo: "Yesterday" },
-  { id: "3", title: "Operating Systems", timeAgo: "Yesterday" },
-  { id: "4", title: "Stoicism", timeAgo: "2 days ago" },
-];
-
-const DEFAULT_COLLECTIONS: CollectionItem[] = [
-  { id: "c1", name: "Learnings" },
-  { id: "c2", name: "Web Development" },
-  { id: "c3", name: "Philosophy" },
-];
-
 export const Sidebar: React.FC<SidebarProps> = ({
-  userName = "tani",
+  userName = "User",
   activeItem = "Dashboard",
-  recents = DEFAULT_RECENTS,
-  collections = DEFAULT_COLLECTIONS,
+  recents = [],
+  collections = [],
   onSelectItem,
   onNewLearning,
   onNewCollection,
@@ -240,6 +227,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             <div className="flex flex-col gap-0.5">
+              {normalizedCollections.length === 0 && (
+                <p className="px-3 py-1.5 text-[11px] text-slate-400 italic">
+                  No collections yet
+                </p>
+              )}
               {normalizedCollections.map((collection) => {
                 const isSelected =
                   activeItem === collection.name || activeItem === collection.id;
@@ -394,6 +386,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             <div className="flex flex-col gap-0.5">
+              {normalizedRecents.length === 0 && (
+                <p className="px-3 py-1.5 text-[11px] text-slate-400 italic">
+                  Nothing studied yet
+                </p>
+              )}
               {normalizedRecents.map((item) => {
                 const isSelected =
                   activeItem === item.title || activeItem === item.id;

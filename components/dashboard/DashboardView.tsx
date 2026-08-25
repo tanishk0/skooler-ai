@@ -12,11 +12,9 @@ import {
   Plus,
   AlertCircle,
   ArrowRight,
-  Code2,
-  BookOpen,
   Folder,
-  Monitor,
   Sprout,
+  Sparkles,
 } from "lucide-react";
 
 export interface DashboardCollectionItem {
@@ -26,19 +24,34 @@ export interface DashboardCollectionItem {
   topicCount?: number;
   progress?: number | null;
   lastStudied?: string;
+  updatedAt?: string;
 }
 
 interface DashboardViewProps {
   userName: string;
-  initialSessions: Array<{ id: string; topic: string }>;
+  initialSessions: Array<{
+    id: string;
+    topic: string;
+    mastery?: number | null;
+    status?: string;
+    updatedAt?: string;
+  }>;
   initialCollections?: DashboardCollectionItem[];
 }
 
-const DEFAULT_MOCK_RECENTS: RecentItem[] = [
-  { id: "1", title: "Stoicism", timeAgo: "Today" },
-  { id: "2", title: "Operating Systems", timeAgo: "Yesterday" },
-  { id: "3", title: "Pragmatism", timeAgo: "2 days ago" },
-];
+const getRelativeTimeAgo = (date?: string) => {
+  if (!date) return "Recently";
+  const diffMs = Date.now() - new Date(date).getTime();
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days} days ago`;
+  return new Date(date).toLocaleDateString();
+};
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   userName,
@@ -51,23 +64,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const [recentsList, setRecentsList] = useState<RecentItem[]>(() =>
-    initialSessions.length > 0
-      ? initialSessions.map((s) => ({
-          id: s.id,
-          title: s.topic,
-          href: `/learn/${s.id}`,
-          timeAgo: "Recently",
-        }))
-      : DEFAULT_MOCK_RECENTS
+    initialSessions.map((s) => ({
+      id: s.id,
+      title: s.topic,
+      href: `/learn/${s.id}`,
+      timeAgo: getRelativeTimeAgo(s.updatedAt),
+      mastery: s.mastery ?? null,
+      status: s.status,
+    }))
   );
 
   const [collectionsList, setCollectionsList] = useState<DashboardCollectionItem[]>(
-    initialCollections.length > 0
-      ? initialCollections
-      : [
-          { id: "c1", name: "Learnings", topicCount: 12, lastStudied: "2h ago" },
-          { id: "c2", name: "Web Development", topicCount: 8, lastStudied: "today" },
-        ]
+    initialCollections
   );
 
   // Modals state
@@ -192,29 +200,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     href: `/collections/${c.id}`,
   }));
 
-  // Utility icons for recent items
-  const getRecentIcon = (title: string, index: number) => {
-    const lower = title.toLowerCase();
-    if (lower.includes("operating") || lower.includes("system") || lower.includes("web") || lower.includes("tech")) {
-      return (
-        <div className="w-9 h-9 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-          <Monitor className="w-4 h-4" />
-        </div>
-      );
-    }
-    if (lower.includes("pragmatism") || lower.includes("read") || lower.includes("book") || lower.includes("history")) {
-      return (
-        <div className="w-9 h-9 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-          <BookOpen className="w-4 h-4" />
-        </div>
-      );
-    }
-    return (
-      <div className="w-9 h-9 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-        <Sprout className="w-4 h-4" />
-      </div>
-    );
-  };
+  const getRecentIcon = () => (
+    <div className="w-9 h-9 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+      <Sprout className="w-4 h-4" />
+    </div>
+  );
 
   const getRecentProgressBarColor = (index: number) => {
     const colors = ["bg-emerald-500", "bg-amber-500", "bg-indigo-600"];
@@ -322,11 +312,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-w-0">
+              {collectionsList.length === 0 && (
+                <div className="sm:col-span-2 lg:col-span-3 flex items-center gap-3 p-4 rounded-md border border-dashed border-slate-200 bg-white text-sm text-slate-500">
+                  <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+                  <span>
+                    No collections yet — create one to organize your learning topics.
+                  </span>
+                </div>
+              )}
               {collectionsList.map((col) => {
-                const isWebDev = col.name.toLowerCase().includes("web");
                 const hasProgress = typeof col.progress === "number" && col.progress > 0;
                 const progress = hasProgress ? Math.min(100, Math.max(0, col.progress!)) : 0;
-                const lastStudied = col.lastStudied || "recently";
+                const lastStudied =
+                  col.topicCount && col.topicCount > 0
+                    ? `Last studied ${col.lastStudied || getRelativeTimeAgo(col.updatedAt)}`
+                    : "No topics yet";
 
                 return (
                   <div
@@ -336,7 +336,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   >
                     <div className="min-w-0">
                       <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shrink-0">
-                        {isWebDev ? <Code2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <Folder className="w-4 h-4 sm:w-5 sm:h-5" />}
+                        <Folder className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
 
                       <h3 className="font-bold text-slate-900 text-sm sm:text-base group-hover:text-indigo-600 transition-colors truncate">
@@ -365,7 +365,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                       <div className="flex items-center justify-between text-xs min-w-0">
                         <span className="text-slate-400 text-[11px] truncate pr-2">
-                          Last studied {lastStudied}
+                          {lastStudied}
                         </span>
                         <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform shrink-0" />
                       </div>
@@ -392,22 +392,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* RECENTLY STUDIED Section */}
           <div className="flex flex-col gap-3 sm:gap-4 min-w-0">
-            <div className="flex items-center justify-between gap-2 min-w-0">
-              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
-                Recently Studied
-              </h2>
+            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
+              Recently Studied
+            </h2>
 
-              <button
-                type="button"
-                onClick={() => {}}
-                className="text-xs font-semibold text-indigo-600 hover:underline cursor-pointer shrink-0"
-              >
-                View all
-              </button>
-            </div>
-
-            <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden divide-y divide-slate-100 min-w-0">
-              {recentsList.map((item, idx) => {
+            {recentsList.length === 0 ? (
+              <div className="flex items-center gap-3 p-4 rounded-md border border-dashed border-slate-200 bg-white text-sm text-slate-500">
+                <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span>
+                  Nothing here yet — type any topic above to start your first
+                  learning session.
+                </span>
+              </div>
+            ) : (
+              <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden divide-y divide-slate-100 min-w-0">
+                {recentsList.map((item, idx) => {
                 const hasMastery = typeof item.mastery === "number" && item.mastery > 0;
                 const masteryVal = hasMastery ? Math.min(100, Math.max(0, item.mastery!)) : 0;
                 const barColor = getRecentProgressBarColor(idx);
@@ -418,7 +417,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     onClick={() => handleSelectItem(item)}
                     className="p-3.5 sm:p-4 hover:bg-slate-50/60 transition-colors flex items-center gap-3 sm:gap-4 cursor-pointer group min-w-0"
                   >
-                    {getRecentIcon(item.title, idx)}
+                    {getRecentIcon()}
 
                     <div className="min-w-0 flex-1">
                       <h4 className="font-bold text-slate-900 text-xs sm:text-sm truncate">
@@ -456,7 +455,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

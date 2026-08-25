@@ -20,6 +20,7 @@ export default async function Home() {
     topic: string;
     mastery?: number | null;
     status?: string;
+    updatedAt?: string;
   }> = [];
 
   let userCollections: Array<{
@@ -28,6 +29,7 @@ export default async function Home() {
     description?: string;
     topicCount?: number;
     progress?: number | null;
+    updatedAt?: string;
   }> = [];
 
   try {
@@ -44,6 +46,7 @@ export default async function Home() {
       topic: doc.topic,
       mastery: doc.status === "completed" ? 100 : (typeof doc.mastery === "number" ? doc.mastery : null),
       status: doc.status || "in_progress",
+      updatedAt: (doc.updatedAt || doc.createdAt || new Date()).toISOString(),
     }));
 
     const collectionDocs = await Collection.find({
@@ -88,6 +91,7 @@ export default async function Home() {
         description: doc.description || "",
         topicCount: stats?.count || 0,
         progress: stats?.avgMastery ?? null,
+        updatedAt: (doc.updatedAt || doc.createdAt || new Date()).toISOString(),
       };
     });
   } catch (err) {
