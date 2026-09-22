@@ -9,7 +9,7 @@ import {
   TopicValidationResult,
 } from "./types";
 
-const TIMEOUT_MS = 45_000;
+const TIMEOUT_MS = Number(process.env.AI_API_TIMEOUT_MS) || 120_000;
 
 function getBaseUrl(): string {
   return (process.env.AI_API_URL || "http://localhost:8000").replace(/\/$/, "");
@@ -51,7 +51,10 @@ async function post<T>(path: string, body: object): Promise<T> {
     if (error instanceof AIClientError) throw error;
     const cause = error instanceof Error ? error : new Error("Unknown network error");
     if (cause.name === "TimeoutError" || cause.name === "AbortError") {
-      throw new AIClientError("FastAPI service timed out", 504);
+      throw new AIClientError(
+        "The AI engine took too long to respond. The service may be waking up (cold start); please try again in a few moments.",
+        504,
+      );
     }
     throw new AIClientError(
       `Failed to connect to AI service at ${baseUrl}: ${cause.message}`,
