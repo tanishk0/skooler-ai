@@ -25,7 +25,7 @@ export const ContinueSection: React.FC<ContinueSectionProps> = ({
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin text-white" />
-            <span>Loading next step...</span>
+            <span>Building next step...</span>
           </>
         ) : (
           <>

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import LearningRoadmap from "./LearningRoadmap";
 import LearningTimeline from "./LearningTimeline";
+import ModuleBuildingProgress from "./ModuleBuildingProgress";
 import Sidebar from "@/components/sidebar/Sidebar";
 import MobileHeader from "@/components/layout/MobileHeader";
 import DrawerOverlay from "@/components/layout/DrawerOverlay";
@@ -333,12 +334,14 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
               isSubmitting={isSubmitting}
             />
 
-            {/* Spinner when processing */}
+            {/* Proper Progress Bar & Engine Status when processing */}
             {isSubmitting && (
-              <div className="w-full max-w-3xl p-5 rounded-md bg-indigo-50/50 border border-indigo-100 flex items-center gap-3 text-indigo-900 text-sm font-medium animate-pulse shadow-2xs my-4">
-                <Loader2 className="w-5 h-5 animate-spin text-indigo-600 shrink-0" />
-                <span>Skooler AI is analyzing your progress...</span>
-              </div>
+              <ModuleBuildingProgress
+                isOpen={isSubmitting}
+                topic={currentModule?.name || currentConcept?.name || session.topic}
+                mode="inline"
+                type="session_step"
+              />
             )}
           </div>
         </main>
