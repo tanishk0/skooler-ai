@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth-client";
 import Sidebar, { RecentItem, CollectionItem } from "@/components/sidebar/Sidebar";
 import MobileHeader from "@/components/layout/MobileHeader";
 import DrawerOverlay from "@/components/layout/DrawerOverlay";
@@ -214,12 +215,27 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error("Client sign out error:", err);
+    }
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Server logout error:", err);
+    }
+    window.location.href = "/login";
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#f9fafb] font-sans overflow-x-hidden">
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#FDF8F3] font-sans overflow-x-hidden">
       {/* Mobile Header */}
       <MobileHeader
         title={collection.name}
         onMenuClick={() => setIsMobileSidebarOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Mobile Sidebar Drawer */}
@@ -236,7 +252,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
           onSelectItem={(item) => {
             setIsMobileSidebarOpen(false);
             if (typeof item === "string") {
-              if (item === "Dashboard") router.push("/");
+              if (item === "Dashboard" || item === "Home") router.push("/");
             } else if (item.href) {
               router.push(item.href);
             }
@@ -303,7 +319,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
           activeItem={collection.name}
           onSelectItem={(item) => {
             if (typeof item === "string") {
-              if (item === "Dashboard") router.push("/");
+              if (item === "Dashboard" || item === "Home") router.push("/");
             } else if (item.href) {
               router.push(item.href);
             }
@@ -360,11 +376,11 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
       <main className="flex-1 flex flex-col items-center p-4 sm:p-6 lg:p-10 min-w-0 max-w-full overflow-y-auto">
         <div className="w-full max-w-4xl mx-auto flex flex-col gap-6 sm:gap-8 min-w-0">
           {/* Header Card */}
-          <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-md bg-white border border-slate-200/80 shadow-xs relative min-w-0">
+          <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-white border border-[#4E342E]/10 shadow-xs relative min-w-0">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-4 min-w-0">
               <div className="flex items-start gap-3 sm:gap-3.5 min-w-0 flex-1">
-                <div className="p-2.5 sm:p-3 rounded-md bg-indigo-600 text-white shadow-md shadow-indigo-200 shrink-0">
-                  <Folder className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="p-2.5 sm:p-3 rounded-xl bg-[#4E342E] text-white shadow-xs shrink-0">
+                  <Folder className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.8]" />
                 </div>
 
                 {isEditingCollection ? (
@@ -376,7 +392,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="px-3 py-1.5 text-lg sm:text-xl font-bold border border-indigo-300 rounded-md text-zinc-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-sans"
+                      className="px-3.5 py-1.5 text-lg sm:text-xl font-bold border border-[#4E342E]/30 rounded-xl text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#4E342E]/15 font-sans"
                       autoFocus
                     />
                     <textarea
@@ -384,19 +400,19 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                       onChange={(e) => setEditDesc(e.target.value)}
                       placeholder="Add a description..."
                       rows={2}
-                      className="px-3 py-1 text-xs border border-zinc-300 rounded-md text-zinc-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none font-sans"
+                      className="px-3.5 py-1.5 text-xs border border-[#4E342E]/20 rounded-xl text-[#4E342E] bg-white focus:outline-none focus:ring-2 focus:ring-[#4E342E]/15 resize-none font-sans"
                     />
                     <div className="flex items-center gap-2 mt-1">
                       <button
                         type="submit"
-                        className="px-3 py-1 text-xs font-semibold bg-indigo-600 text-white rounded-md hover:bg-indigo-700 cursor-pointer"
+                        className="px-3.5 py-1.5 text-xs font-semibold bg-[#4E342E] text-white rounded-xl hover:bg-[#3D2924] cursor-pointer"
                       >
                         Save
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsEditingCollection(false)}
-                        className="px-3 py-1 text-xs font-medium bg-zinc-200 text-zinc-700 rounded-md hover:bg-zinc-300 cursor-pointer"
+                        className="px-3.5 py-1.5 text-xs font-medium bg-[#4E342E]/5 text-[#4E342E] rounded-xl hover:bg-[#4E342E]/10 cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -405,7 +421,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                 ) : (
                   <div className="flex flex-col gap-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight break-words min-w-0">
+                      <h1 className="text-xl sm:text-2xl font-bold text-[#4E342E] tracking-tight break-words min-w-0">
                         {collection.name}
                       </h1>
                       <button
@@ -414,20 +430,20 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                           setEditDesc(collection.description);
                           setIsEditingCollection(true);
                         }}
-                        className="p-1 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-200/50 rounded-md transition-colors cursor-pointer shrink-0"
+                        className="p-1 text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 rounded-lg transition-colors cursor-pointer shrink-0"
                         title="Edit Collection"
                       >
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                     {collection.description && (
-                      <p className="text-xs text-zinc-600 max-w-xl break-words min-w-0">
+                      <p className="text-xs text-[#8D6E63] max-w-xl break-words min-w-0">
                         {collection.description}
                       </p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-100 text-indigo-800 shrink-0">
-                        <BookOpen className="w-3.5 h-3.5" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-[#4E342E]/5 text-[#4E342E] border border-[#4E342E]/10 shrink-0">
+                        <BookOpen className="w-3.5 h-3.5 text-[#8D6E63]" />
                         {sessions.length}{" "}
                         {sessions.length === 1 ? "topic" : "topics"}
                       </span>
@@ -441,7 +457,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsDeleteCollectionModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200/80 rounded-md transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-[#E57373] hover:bg-[#E57373]/10 border border-[#E57373]/30 rounded-xl transition-colors cursor-pointer"
                   title="Delete Collection"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -453,7 +469,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
 
           {/* Start Learning Input Banner */}
           <div className="flex flex-col gap-3">
-            <h2 className="text-xs font-bold text-slate-400 tracking-wide uppercase">
+            <h2 className="text-xs font-bold text-[#8D6E63] tracking-wide uppercase">
               Learn something new in {collection.name}
             </h2>
             <LearningInput
@@ -463,8 +479,8 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-[#E57373]/10 border border-[#E57373]/30 text-[#E57373] text-xs font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#E57373]" />
               <span>{error}</span>
             </div>
           )}
@@ -472,23 +488,23 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
           {/* Topics List / Cards */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-zinc-900 tracking-tight">
+              <h2 className="text-base font-bold text-[#4E342E] tracking-tight">
                 Topics ({sessions.length})
               </h2>
             </div>
 
             {sessions.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 rounded-md border-2 border-dashed border-zinc-200 bg-white text-center gap-3">
-                <div className="p-3 rounded-md bg-indigo-50 text-indigo-600">
+              <div className="flex flex-col items-center justify-center p-12 rounded-2xl border-2 border-dashed border-[#4E342E]/20 bg-white text-center gap-3">
+                <div className="p-3 rounded-xl bg-[#4E342E]/5 text-[#4E342E]">
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h3 className="text-sm font-semibold text-zinc-800">
+                  <h3 className="text-sm font-semibold text-[#4E342E]">
                     This collection is empty
                   </h3>
-                  <p className="text-xs text-zinc-500 max-w-sm">
+                  <p className="text-xs text-[#8D6E63] max-w-sm">
                     Enter a topic in the input above to start learning inside{" "}
-                    <span className="font-semibold text-zinc-700">
+                    <span className="font-semibold text-[#4E342E]">
                       {collection.name}
                     </span>
                     .
@@ -504,21 +520,21 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                   return (
                     <div
                       key={s.id}
-                      className="group relative flex flex-col justify-between p-4 rounded-md border border-slate-200/80 bg-white hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer"
+                      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-[#4E342E]/10 bg-white hover:border-[#4E342E]/30 hover:shadow-md transition-all cursor-pointer"
                       onClick={() => router.push(`/learn/${s.id}`)}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex flex-col gap-1 min-w-0 flex-1">
-                          <h3 className="font-semibold text-zinc-900 text-sm group-hover:text-indigo-600 transition-colors truncate">
+                        <div className="flex flex-col gap-1.5 min-w-0 flex-1">
+                          <h3 className="font-semibold text-[#4E342E] text-sm sm:text-base group-hover:text-[#6D4C41] transition-colors truncate">
                             {s.topic}
                           </h3>
                           <div className="flex items-center gap-2">
                             {isComplete ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#6B8F71] bg-[#6B8F71]/10 px-2.5 py-0.5 rounded-lg border border-[#6B8F71]/30">
                                 <CheckCircle2 className="w-3 h-3" /> Mastered
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200/60">
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#4E342E] bg-[#4E342E]/5 px-2.5 py-0.5 rounded-lg border border-[#4E342E]/15">
                                 Active
                               </span>
                             )}
@@ -533,7 +549,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                               e.stopPropagation();
                               setActiveTopicMenuId(isMenuOpen ? null : s.id);
                             }}
-                            className="p-1 rounded-md hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer"
+                            className="p-1 rounded-lg hover:bg-[#4E342E]/10 text-[#8D6E63] hover:text-[#4E342E] transition-colors cursor-pointer"
                             title="Options"
                           >
                             <MoreVertical className="w-4 h-4" />
@@ -541,7 +557,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
 
                           {isMenuOpen && (
                             <div
-                              className="absolute right-0 top-7 w-44 bg-white border border-zinc-200 rounded-md shadow-lg z-30 py-1 text-xs font-medium"
+                              className="absolute right-0 top-7 w-44 bg-[#FDF8F3] border border-[#4E342E]/15 rounded-xl shadow-lg z-30 py-1 text-xs font-medium"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <button
@@ -550,9 +566,9 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                                   setActiveTopicMenuId(null);
                                   handleRemoveFromCollection(s.id);
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-zinc-700 hover:bg-zinc-100 text-left transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-[#4E342E] hover:bg-[#4E342E]/10 text-left transition-colors cursor-pointer"
                               >
-                                <FolderMinus className="w-3.5 h-3.5 text-zinc-500" />
+                                <FolderMinus className="w-3.5 h-3.5 text-[#8D6E63]" />
                                 <span>Remove from Collection</span>
                               </button>
                               <button
@@ -561,9 +577,9 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                                   setActiveTopicMenuId(null);
                                   handleDeleteSession(s.id);
                                 }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 text-left transition-colors cursor-pointer"
+                                className="w-full flex items-center gap-2 px-3 py-2 text-[#E57373] hover:bg-[#E57373]/10 text-left transition-colors cursor-pointer"
                               >
-                                <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                                <Trash2 className="w-3.5 h-3.5 text-[#E57373]" />
                                 <span>Delete Session</span>
                               </button>
                             </div>
@@ -571,7 +587,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-100 text-[11px] text-zinc-500">
+                      <div className="flex items-center justify-between pt-3 mt-3 border-t border-[#4E342E]/10 text-[11px] text-[#8D6E63]">
                         <span suppressHydrationWarning>
                           Updated{" "}
                           {new Date(s.updatedAt).toLocaleDateString("en-US", {
@@ -579,7 +595,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                             day: "numeric",
                           })}
                         </span>
-                        <span className="inline-flex items-center gap-1 font-semibold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                        <span className="inline-flex items-center gap-1 font-semibold text-[#4E342E] group-hover:translate-x-0.5 transition-transform">
                           Continue <ArrowRight className="w-3 h-3" />
                         </span>
                       </div>
@@ -595,21 +611,21 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
       {/* Delete Collection Modal */}
       {isDeleteCollectionModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="w-full max-w-sm bg-white rounded-md shadow-2xl border border-zinc-200 p-5 flex flex-col gap-4">
+          <div className="w-full max-w-sm bg-[#FDF8F3] rounded-2xl shadow-2xl border border-[#4E342E]/15 p-5 sm:p-6 flex flex-col gap-4 font-sans">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-zinc-900 text-sm">
+              <h3 className="font-bold text-[#4E342E] text-sm">
                 Delete Collection?
               </h3>
               <button
                 onClick={() => setIsDeleteCollectionModalOpen(false)}
-                className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
+                className="p-1 rounded-lg text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-xs text-zinc-600 leading-relaxed">
+            <p className="text-xs text-[#8D6E63] leading-relaxed">
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-zinc-900">
+              <span className="font-semibold text-[#4E342E]">
                 &ldquo;{collection.name}&rdquo;
               </span>
               ? Your topics inside this collection will not be deleted.
@@ -617,14 +633,14 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsDeleteCollectionModalOpen(false)}
-                className="px-3.5 py-1.5 text-xs font-medium text-zinc-700 bg-zinc-100 hover:bg-zinc-200 rounded-md transition-colors"
+                className="px-3.5 py-1.5 text-xs font-medium text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteCollectionConfirm}
                 disabled={isDeletingCollection}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-[#E57373] hover:bg-[#E57373]/90 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {isDeletingCollection ? (
                   <>
