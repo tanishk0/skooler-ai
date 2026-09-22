@@ -45,16 +45,16 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
         return (
           <div
             key={bIdx}
-            className="my-5 rounded-md bg-slate-50 border border-slate-200/80 p-4 font-mono text-xs text-slate-800 flex items-start justify-between shadow-2xs gap-4"
+            className="my-5 rounded-xl bg-white border border-[#4E342E]/15 p-4 font-mono text-xs text-[#4E342E] flex items-start justify-between shadow-2xs gap-4"
           >
             <div className="flex flex-col gap-1.5 min-w-0 flex-1 overflow-x-auto">
               {codeLines.map((line, lIdx) => (
                 <div key={lIdx} className="flex items-center gap-3">
-                  <span className="text-slate-400 select-none text-[11px] w-4 text-right">
+                  <span className="text-[#8D6E63]/60 select-none text-[11px] w-4 text-right">
                     {lIdx + 1}
                   </span>
                   {lIdx === 0 && (
-                    <span className="text-indigo-600 font-bold select-none mr-1">
+                    <span className="text-[#4E342E] font-bold select-none mr-1">
                       {language}
                     </span>
                   )}
@@ -65,11 +65,11 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
             <button
               type="button"
               onClick={() => handleCopyCode(fullCode, bIdx)}
-              className="p-1.5 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+              className="p-1.5 rounded-lg bg-[#4E342E]/5 border border-[#4E342E]/10 text-[#4E342E] hover:bg-[#4E342E]/10 transition-colors cursor-pointer shrink-0"
               title="Copy code"
             >
               {copiedCodeIndex === bIdx ? (
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <Check className="w-3.5 h-3.5 text-[#6B8F71]" />
               ) : (
                 <Copy className="w-3.5 h-3.5" />
               )}
@@ -88,9 +88,9 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
               return (
                 <li
                   key={iIdx}
-                  className="flex items-start gap-2.5 text-slate-700 text-sm sm:text-base leading-relaxed"
+                  className="flex items-start gap-2.5 text-[#4E342E]/90 text-sm sm:text-base leading-relaxed"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0 mt-2.5" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#4E342E] shrink-0 mt-2.5" />
                   <span>{formatInlineText(cleanItem)}</span>
                 </li>
               );
@@ -102,7 +102,7 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
       // Handle subheadings
       if (/^\d+\.\s/.test(trimmed) && trimmed.length < 80) {
         return (
-          <h3 key={bIdx} className="text-lg font-bold text-slate-900 mt-6 mb-2">
+          <h3 key={bIdx} className="font-serif text-lg font-bold text-[#4E342E] mt-6 mb-2">
             {trimmed}
           </h3>
         );
@@ -110,7 +110,7 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
 
       // Standard paragraph
       return (
-        <p key={bIdx} className="text-slate-700 text-sm sm:text-base leading-relaxed my-3">
+        <p key={bIdx} className="text-[#4E342E]/90 text-sm sm:text-base leading-relaxed my-3">
           {formatInlineText(trimmed)}
         </p>
       );
@@ -126,7 +126,7 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
         return (
           <code
             key={idx}
-            className="px-1.5 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono text-xs font-medium text-slate-800"
+            className="px-1.5 py-0.5 rounded-md bg-[#4E342E]/5 border border-[#4E342E]/15 font-mono text-xs font-medium text-[#4E342E]"
           >
             {codeText}
           </code>
@@ -135,7 +135,7 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
       if (part.startsWith("**") && part.endsWith("**")) {
         const boldText = part.slice(2, -2);
         return (
-          <strong key={idx} className="font-bold text-slate-900">
+          <strong key={idx} className="font-bold text-[#4E342E]">
             {boldText}
           </strong>
         );
@@ -150,22 +150,22 @@ export const ConceptContent: React.FC<ConceptContentProps> = ({
     <div className="flex flex-col gap-2 font-sans max-w-3xl w-full">
       {/* Concept Heading */}
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight leading-snug">
+        <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#4E342E] tracking-tight leading-snug">
           {displayTitle}
         </h2>
         {isMastered && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#6B8F71]/10 text-[#6B8F71] border border-[#6B8F71]/30 text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Mastered</span>
           </span>
         )}
       </div>
 
-      {/* Short Indigo Accent Line under heading */}
-      <div className="w-8 h-1 bg-indigo-600 rounded-md mt-1 mb-4" />
+      {/* Short Espresso Accent Line under heading */}
+      <div className="w-10 h-1 bg-[#4E342E] rounded-full mt-1 mb-4" />
 
       {/* Formatted Content */}
-      <div className="text-slate-700">
+      <div className="text-[#4E342E]/90">
         {renderFormattedText(content)}
       </div>
     </div>

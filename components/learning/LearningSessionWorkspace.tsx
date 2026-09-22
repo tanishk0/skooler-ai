@@ -8,7 +8,8 @@ import Sidebar from "@/components/sidebar/Sidebar";
 import MobileHeader from "@/components/layout/MobileHeader";
 import DrawerOverlay from "@/components/layout/DrawerOverlay";
 import { Concept, LearningEvent, InteractionResponse, LearningState } from "@/lib/ai/types";
-import { Loader2, AlertCircle, FileText, X, BookOpen, Menu } from "lucide-react";
+import { Loader2, AlertCircle, FileText, X, BookOpen, Menu, LogOut } from "lucide-react";
+import { signOut } from "@/lib/auth-client";
 
 export interface SerializedSession {
   id: string;
@@ -189,30 +190,52 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
     });
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error("Client sign out error:", err);
+    }
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Server logout error:", err);
+    }
+    window.location.href = "/login";
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#f9fafb] font-sans overflow-x-hidden">
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#FDF8F3] font-sans overflow-x-hidden">
       {/* Mobile Top Header */}
       <MobileHeader
         title={session.topic}
         onMenuClick={() => setIsMobileSidebarOpen(true)}
         rightAction={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setIsMobileRoadmapOpen(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#4E342E]/5 hover:bg-[#4E342E]/10 border border-[#4E342E]/10 text-[#4E342E] text-xs font-semibold transition-colors cursor-pointer"
               title="Open Syllabus Roadmap"
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen className="w-3.5 h-3.5 text-[#8D6E63]" />
               <span>Syllabus</span>
             </button>
             <button
               type="button"
               onClick={() => setShowTranscript(!showTranscript)}
-              className="p-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
+              className="p-1.5 rounded-xl border border-[#4E342E]/15 bg-white hover:bg-[#4E342E]/5 text-[#4E342E] transition-colors cursor-pointer"
               title="Session Log"
             >
-              <FileText className="w-4 h-4 text-slate-600" />
+              <FileText className="w-4 h-4 text-[#8D6E63]" />
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="p-1.5 rounded-xl border border-[#E57373]/20 bg-white hover:bg-[#E57373]/10 text-[#C62828] transition-colors cursor-pointer"
+              title="Log out"
+            >
+              <LogOut className="w-4 h-4 text-[#E57373]" />
             </button>
           </div>
         }
@@ -272,43 +295,54 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
       </div>
 
       {/* Main Content Workspace */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-white min-w-0">
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FAF6F0]/60 min-w-0">
         {/* Desktop Top Navigation Bar */}
-        <header className="hidden lg:flex w-full px-8 py-3.5 border-b border-slate-100/90 bg-white items-center justify-between shadow-2xs shrink-0 font-sans min-w-0">
+        <header className="hidden lg:flex w-full px-8 py-3.5 border-b border-[#4E342E]/10 bg-[#FDF8F3] items-center justify-between shadow-2xs shrink-0 font-sans min-w-0">
           <div className="flex flex-wrap items-center gap-2.5 text-xs min-w-0 flex-1 pr-4">
-            <h2 className="font-bold tracking-wider text-slate-900 uppercase text-xs truncate max-w-[200px]">
+            <h2 className="font-bold tracking-wider text-[#4E342E] uppercase text-xs truncate max-w-[200px]">
               {session.topic}
             </h2>
             {currentModule && (
               <>
-                <span className="text-slate-300">•</span>
-                <span className="font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100/80 truncate max-w-[200px]">
+                <span className="text-[#8D6E63]/40">•</span>
+                <span className="font-semibold text-[#4E342E] bg-[#4E342E]/5 px-2.5 py-0.5 rounded-lg border border-[#4E342E]/10 truncate max-w-[200px]">
                   {currentModule.name} ({currentModuleIdx + 1}/{modules?.length || 1})
                 </span>
               </>
             )}
             {currentConcept && (
               <>
-                <span className="text-slate-300">•</span>
-                <span className="font-medium text-slate-700 truncate max-w-[220px]">
+                <span className="text-[#8D6E63]/40">•</span>
+                <span className="font-medium text-[#8D6E63] truncate max-w-[220px]">
                   {currentConcept.name} ({currentIdx + 1}/{concepts.length})
                 </span>
               </>
             )}
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-              <span className={`w-1.5 h-1.5 rounded-full ${isComplete ? "bg-emerald-500" : "bg-indigo-600"}`} />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-white text-[#4E342E] border border-[#4E342E]/15 shrink-0">
+              <span className={`w-1.5 h-1.5 rounded-full ${isComplete ? "bg-[#6B8F71]" : "bg-[#4E342E]"}`} />
               {isComplete ? "Completed" : "Active Session"}
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowTranscript(!showTranscript)}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors cursor-pointer shrink-0"
-          >
-            <FileText className="w-3.5 h-3.5 text-slate-500" />
-            <span>Session Log</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowTranscript(!showTranscript)}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#4E342E]/15 bg-white hover:bg-[#4E342E]/5 text-[#4E342E] text-xs font-semibold transition-colors cursor-pointer shrink-0 shadow-2xs"
+            >
+              <FileText className="w-3.5 h-3.5 text-[#8D6E63]" />
+              <span>Session Log</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              title="Log out"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#E57373]/25 bg-white hover:bg-[#E57373]/10 text-[#C62828] text-xs font-semibold transition-colors cursor-pointer shrink-0 shadow-2xs"
+            >
+              <LogOut className="w-3.5 h-3.5 text-[#E57373]" />
+              <span>Log out</span>
+            </button>
+          </div>
         </header>
 
         {/* Learning Content Stream */}
@@ -318,8 +352,8 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
         >
           <div className="w-full max-w-3xl flex flex-col gap-6 py-2 sm:py-4 min-w-0">
             {errorMessage && (
-              <div className="w-full p-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+              <div className="w-full p-4 rounded-xl bg-[#E57373]/10 border border-[#E57373]/30 text-[#E57373] text-xs flex items-center gap-2 font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 text-[#E57373]" />
                 <span>{errorMessage}</span>
               </div>
             )}
@@ -348,18 +382,18 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
 
         {/* Session Log Drawer / Modal Overlay */}
         {showTranscript && (
-          <div className="fixed inset-0 z-50 flex justify-end bg-black/30 backdrop-blur-xs animate-in fade-in">
-            <div className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-slate-200 font-sans">
-              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-600" />
-                  <h3 className="font-bold text-slate-900 text-sm">
+          <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs animate-in fade-in">
+            <div className="w-full max-w-lg bg-[#FDF8F3] h-full shadow-2xl flex flex-col border-l border-[#4E342E]/15 font-sans">
+              <div className="px-5 py-4 border-b border-[#4E342E]/10 flex items-center justify-between bg-[#FDF8F3]">
+                <div className="flex items-center gap-2.5">
+                  <FileText className="w-4 h-4 text-[#4E342E]" />
+                  <h3 className="font-bold text-[#4E342E] text-sm">
                     Session Log & Transcript
                   </h3>
                 </div>
                 <button
                   onClick={() => setShowTranscript(false)}
-                  className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                  className="p-1 rounded-lg text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -369,13 +403,13 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
                 {events.map((evt, idx) => (
                   <div
                     key={evt._id || idx}
-                    className={`p-3.5 rounded-md text-xs border ${
+                    className={`p-4 rounded-xl text-xs border ${
                       evt.role === "user"
-                        ? "bg-slate-50 border-slate-200/80 text-slate-800"
-                        : "bg-indigo-50/40 border-indigo-100 text-slate-900"
+                        ? "bg-white border-[#4E342E]/10 text-[#4E342E]"
+                        : "bg-[#4E342E]/5 border-[#4E342E]/15 text-[#4E342E]"
                     }`}
                   >
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">
+                    <div className="flex items-center justify-between text-[10px] text-[#8D6E63] font-bold uppercase tracking-wider mb-1.5">
                       <span>{evt.role === "user" ? "You" : "Skooler AI"}</span>
                       <span>{evt.type}</span>
                     </div>
