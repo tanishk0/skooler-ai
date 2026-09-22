@@ -3,10 +3,31 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+
+  /* Redesign Color Palette */
+  --color-primary: #4E342E;
+  --color-secondary: #8D6E63;
+  --color-background: #FDF8F3;
+  --color-accent: #F4A261;
+  --color-success: #6B8F71;
+  --color-error: #E57373;
+  --color-info: #64B5F6;
+}
+
+:root {
+  --primary: #4E342E;
+  --secondary: #8D6E63;
+  --background: #FDF8F3;
+  --accent: #F4A261;
+  --success: #6B8F71;
+  --error: #E57373;
+  --info: #64B5F6;
 }
 
 body {
   font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-primary);
 }
 
 @keyframes shimmer {
