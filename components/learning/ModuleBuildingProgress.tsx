@@ -31,7 +31,7 @@ const NEW_MODULE_STEPS = [
   "Formulating interactive Feynman checkpoints & quizzes...",
   "Calibrating dynamic assessment rubrics...",
   "Polishing lesson notes & preparing your workspace...",
-  "Finalizing module setup... Engine working to bring you in!",
+  "Finalizing module setup... Getting everything ready for you!",
 ];
 
 const SESSION_STEP_MESSAGES = [
@@ -141,7 +141,7 @@ export const ModuleBuildingProgress: React.FC<ModuleBuildingProgressProps> = ({
             </div>
             <div className="min-w-0">
               <span className="text-xs font-bold text-[#4E342E] tracking-tight block truncate">
-                {isCompleted ? "Step Complete" : "Skooler AI Engine Active"}
+                {isCompleted ? "Step Complete" : "Preparing Next Step"}
               </span>
               <span className="text-[11px] text-[#8D6E63] truncate block">
                 {topic ? `Topic: ${topic}` : "Processing next lesson step"}
@@ -150,15 +150,6 @@ export const ModuleBuildingProgress: React.FC<ModuleBuildingProgressProps> = ({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            {!isCompleted && !error && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#6B8F71]/10 border border-[#6B8F71]/30 text-[11px] font-semibold text-[#6B8F71]">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6B8F71] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#6B8F71]" />
-                </span>
-                <span>Engine Working</span>
-              </span>
-            )}
             <span className="text-xs font-mono font-bold text-[#4E342E]">
               {displayedProgress}%
             </span>
@@ -249,17 +240,8 @@ export const ModuleBuildingProgress: React.FC<ModuleBuildingProgressProps> = ({
             </div>
           </div>
 
-          {/* Engine Status Live Badge */}
+          {/* Header Action */}
           <div className="shrink-0 flex items-center gap-2">
-            {!error && !isCompleted && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#6B8F71]/10 border border-[#6B8F71]/30 text-[11px] font-semibold text-[#6B8F71] shadow-2xs">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6B8F71] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6B8F71]" />
-                </span>
-                <span>Engine Active</span>
-              </span>
-            )}
             {error && onClose && (
               <button
                 type="button"
@@ -338,7 +320,7 @@ export const ModuleBuildingProgress: React.FC<ModuleBuildingProgressProps> = ({
             {/* Milestones Step Checklist */}
             <div className="bg-white rounded-2xl border border-[#4E342E]/10 p-3.5 sm:p-4 flex flex-col gap-2.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#8D6E63] block mb-0.5">
-                Engine Pipeline Milestones
+                Curriculum Milestones
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 {MILESTONES.map((m) => {
@@ -374,7 +356,7 @@ export const ModuleBuildingProgress: React.FC<ModuleBuildingProgressProps> = ({
 
             {/* Reassurance Micro-Copy */}
             <p className="text-[11px] text-[#8D6E63] leading-relaxed text-center px-2">
-              Our AI teaching engine creates customized, high-retention curricula from scratch.
+              Our system creates customized, high-retention curricula from scratch.
               Nothing is frozen—deep synthesis takes around 15–30 seconds. Please keep this tab open.
             </p>
           </>

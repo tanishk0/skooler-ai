@@ -368,7 +368,7 @@ export const LearningSessionWorkspace: React.FC<LearningSessionWorkspaceProps> =
               isSubmitting={isSubmitting}
             />
 
-            {/* Proper Progress Bar & Engine Status when processing */}
+            {/* Progress Bar when processing */}
             {isSubmitting && (
               <ModuleBuildingProgress
                 isOpen={isSubmitting}

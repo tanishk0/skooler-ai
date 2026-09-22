@@ -52,7 +52,7 @@ async function post<T>(path: string, body: object): Promise<T> {
     const cause = error instanceof Error ? error : new Error("Unknown network error");
     if (cause.name === "TimeoutError" || cause.name === "AbortError") {
       throw new AIClientError(
-        "The AI engine took too long to respond. The service may be waking up (cold start); please try again in a few moments.",
+        "The AI service took too long to respond. The service may be waking up (cold start); please try again in a few moments.",
         504,
       );
     }
