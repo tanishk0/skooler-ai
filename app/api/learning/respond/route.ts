@@ -7,6 +7,8 @@ import dbConnect from "@/lib/dbConnect";
 import LearningEventModel from "@/models/LearningEvent";
 import LearningSession from "@/models/LearningSession";
 
+export const maxDuration = 120;
+
 function serviceError(error: unknown) {
   const detail = error instanceof AIClientError ? error.data : undefined;
   const rawMessage = error instanceof AIClientError ? error.message : "Unable to process the response.";

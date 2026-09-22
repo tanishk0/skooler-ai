@@ -7,6 +7,8 @@ import dbConnect from "@/lib/dbConnect";
 import LearningEventModel from "@/models/LearningEvent";
 import LearningSession from "@/models/LearningSession";
 
+export const maxDuration = 120;
+
 const CONTINUE_STAGES: readonly LearningState["stage"][] = [
   "awaiting_continue_after_understood",
   "awaiting_continue_after_reteach",

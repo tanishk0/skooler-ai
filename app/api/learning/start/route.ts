@@ -8,10 +8,12 @@ import Collection from "@/models/Collection";
 import LearningEventModel from "@/models/LearningEvent";
 import LearningSession from "@/models/LearningSession";
 
+export const maxDuration = 120;
+
 function serviceError(error: unknown) {
   const detail = error instanceof AIClientError ? error.data : undefined;
   const rawMessage = error instanceof AIClientError ? error.message : "Unable to reach the AI teaching service.";
-  const status = error instanceof AIClientError && error.status ? error.status : 503;
+  const status = error instanceof AIClientError && error.status ? error.status : 500;
   let message = rawMessage;
   if (detail && typeof detail === "object" && "detail" in detail && typeof (detail as { detail: unknown }).detail === "string") {
     message = (detail as { detail: string }).detail;
@@ -63,7 +65,13 @@ export async function POST(request: NextRequest) {
 
   try {
     // Validate before opening a MongoDB session so gibberish never creates a record.
-    const validation = await validateTopic({ topic });
+    let validation;
+    try {
+      validation = await validateTopic({ topic });
+    } catch (error) {
+      return serviceError(error);
+    }
+
     if (!validation.isValid) {
       return NextResponse.json(
         { error: validation.message || "Please enter a real concept to learn." },
@@ -121,6 +129,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ sessionId }, { status: 201 });
   } catch (error) {
     console.error("Error starting learning session:", error);
-    return NextResponse.json({ error: "Unable to start the learning session" }, { status: 500 });
+    return serviceError(error);
   }
 }
