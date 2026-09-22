@@ -480,7 +480,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           {item.title}
                         </span>
                         {item.timeAgo && (
-                          <span className="text-[10px] text-slate-400">
+                          <span
+                            className="text-[10px] text-slate-400"
+                            suppressHydrationWarning
+                          >
                             {item.timeAgo}
                           </span>
                         )}
