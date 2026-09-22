@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bot } from "lucide-react";
+import Image from "next/image";
 
 export interface AuthCardProps {
   title: string;
@@ -23,21 +23,23 @@ export const AuthCard: React.FC<AuthCardProps> = ({
   onFooterLinkClick,
 }) => {
   return (
-    <div className="w-full max-w-md p-8 sm:p-10 rounded-2xl bg-white border border-slate-200/80 shadow-sm transition-all">
+    <div className="w-full max-w-md p-8 sm:p-10 rounded-2xl bg-white border border-[#4E342E]/12 shadow-sm transition-all">
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center gap-2 mb-4">
-          <div className="w-9 h-9 rounded-md bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0">
-            <Bot className="w-5 h-5" />
-          </div>
-          <span className="font-bold text-slate-900 text-xl tracking-tight">
-            Skooler <span className="text-indigo-600">AI</span>
-          </span>
+        <div className="flex justify-center mb-5">
+          <Image
+            src="/assets/logo.png"
+            alt="Skooler"
+            width={140}
+            height={45}
+            priority
+            className="h-9 w-auto object-contain"
+          />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+        <h2 className="text-2xl font-bold text-[#4E342E] tracking-tight">
           {title}
         </h2>
         {subtitle && (
-          <p className="text-xs sm:text-sm text-slate-500 mt-1.5">
+          <p className="text-xs sm:text-sm text-[#8D6E63] mt-1.5">
             {subtitle}
           </p>
         )}
@@ -46,12 +48,12 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       <div>{children}</div>
 
       {(footerText || footerLinkText) && (
-        <div className="mt-8 pt-6 border-t border-slate-100 text-center text-xs sm:text-sm text-slate-500">
+        <div className="mt-8 pt-6 border-t border-[#4E342E]/10 text-center text-xs sm:text-sm text-[#8D6E63]">
           {footerText}{" "}
           {footerLinkHref ? (
             <a
               href={footerLinkHref}
-              className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors"
+              className="font-semibold text-[#4E342E] hover:text-[#2E1F1B] underline decoration-[#4E342E]/30 underline-offset-4 transition-colors"
             >
               {footerLinkText}
             </a>
@@ -59,12 +61,12 @@ export const AuthCard: React.FC<AuthCardProps> = ({
             <button
               type="button"
               onClick={onFooterLinkClick}
-              className="font-semibold text-indigo-600 hover:text-indigo-700 hover:underline transition-colors cursor-pointer"
+              className="font-semibold text-[#4E342E] hover:text-[#2E1F1B] underline decoration-[#4E342E]/30 underline-offset-4 transition-colors cursor-pointer"
             >
               {footerLinkText}
             </button>
           ) : (
-            <span className="font-semibold text-indigo-600">
+            <span className="font-semibold text-[#4E342E]">
               {footerLinkText}
             </span>
           )}

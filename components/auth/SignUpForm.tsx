@@ -48,13 +48,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     setError(null);
     setIsLoading(true);
 
+    const destination =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("callbackUrl") || "/"
+        : "/";
+
     try {
-      await signUp.email(
+      const res = await signUp.email(
         {
           name,
           email,
           password,
-          callbackURL: "/",
+          callbackURL: destination,
         },
         {
           onRequest: () => {
@@ -62,7 +67,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           },
           onSuccess: () => {
             setIsLoading(false);
-            if (onSuccess) onSuccess();
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              window.location.href = destination;
+            }
           },
           onError: (ctx) => {
             setIsLoading(false);
@@ -70,6 +79,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           },
         }
       );
+
+      if (res?.data && !res?.error) {
+        setIsLoading(false);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          window.location.href = destination;
+        }
+      } else if (res?.error) {
+        setIsLoading(false);
+        setError(res.error.message || "Failed to create account. Please try again.");
+      }
     } catch (err: any) {
       setIsLoading(false);
       setError(err?.message || "An unexpected error occurred.");

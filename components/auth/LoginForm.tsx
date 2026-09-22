@@ -36,12 +36,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     setError(null);
     setIsLoading(true);
 
+    const destination =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("callbackUrl") || "/"
+        : "/";
+
     try {
-      await signIn.email(
+      const res = await signIn.email(
         {
           email,
           password,
-          callbackURL: "/",
+          callbackURL: destination,
         },
         {
           onRequest: () => {
@@ -49,7 +54,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           },
           onSuccess: () => {
             setIsLoading(false);
-            if (onSuccess) onSuccess();
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              window.location.href = destination;
+            }
           },
           onError: (ctx) => {
             setIsLoading(false);
@@ -57,6 +66,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           },
         }
       );
+
+      if (res?.data && !res?.error) {
+        setIsLoading(false);
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          window.location.href = destination;
+        }
+      } else if (res?.error) {
+        setIsLoading(false);
+        setError(res.error.message || "Failed to sign in. Please try again.");
+      }
     } catch (err: any) {
       setIsLoading(false);
       setError(err?.message || "An unexpected error occurred.");
@@ -96,10 +117,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         />
 
         <div className="flex items-center justify-between text-xs pt-0.5">
-          <label className="flex items-center gap-2 cursor-pointer text-slate-600 hover:text-slate-800 transition-colors">
+          <label className="flex items-center gap-2 cursor-pointer text-[#8D6E63] hover:text-[#4E342E] transition-colors">
             <input
               type="checkbox"
-              className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"
+              className="rounded border-[#4E342E]/20 text-[#4E342E] focus:ring-[#4E342E]/20 accent-[#4E342E]"
             />
             Remember me
           </label>

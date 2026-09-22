@@ -16,16 +16,16 @@ export const AuthAlert: React.FC<AuthAlertProps> = ({
 
   const styles = {
     error: {
-      bg: "bg-red-50 border-red-200 text-red-700",
-      icon: <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />,
+      bg: "bg-[#E57373]/10 border-[#E57373]/30 text-[#C62828]",
+      icon: <AlertCircle className="w-4 h-4 shrink-0 text-[#E57373]" />,
     },
     success: {
-      bg: "bg-emerald-50 border-emerald-200 text-emerald-700",
-      icon: <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />,
+      bg: "bg-[#6B8F71]/10 border-[#6B8F71]/30 text-[#2E7D32]",
+      icon: <CheckCircle2 className="w-4 h-4 shrink-0 text-[#6B8F71]" />,
     },
     info: {
-      bg: "bg-indigo-50 border-indigo-200 text-indigo-700",
-      icon: <Info className="w-4 h-4 shrink-0 text-indigo-500" />,
+      bg: "bg-[#4E342E]/5 border-[#4E342E]/15 text-[#4E342E]",
+      icon: <Info className="w-4 h-4 shrink-0 text-[#4E342E]" />,
     },
   };
 
