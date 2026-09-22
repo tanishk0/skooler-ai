@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
 import {
-  Bot,
-  LayoutDashboard,
+  Home,
+  Folder,
   Plus,
   ChevronRight,
   Settings,
@@ -13,12 +15,9 @@ import {
   Trash2,
   Check,
   X,
-  FolderPlus,
-  FolderInput,
-  Folder,
-  Clock,
   LogOut,
-  ChevronDown,
+  User,
+  Loader2,
 } from "lucide-react";
 
 export interface RecentItem {
@@ -56,7 +55,7 @@ export interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({
   userName = "User",
-  activeItem = "Dashboard",
+  activeItem = "Home",
   recents = [],
   collections = [],
   onSelectItem,
@@ -74,7 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -85,7 +84,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         !containerRef.current.contains(event.target as Node)
       ) {
         setActiveMenuId(null);
-        setIsProfileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -93,21 +91,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const normalizedRecents: RecentItem[] = recents.map((item, index) => {
-    if (typeof item === "string") {
-      return { id: `recent-${index}-${item}`, title: item, timeAgo: "Recently" };
-    }
-    return {
-      id: item.id || `recent-${index}-${item.title}`,
-      title: item.title,
-      href: item.href,
-      collectionId: item.collectionId,
-      timeAgo: item.timeAgo || "Recently",
-      mastery: item.mastery,
-      status: item.status,
-    };
-  });
 
   const normalizedCollections: CollectionItem[] = collections.map(
     (item, index) => {
@@ -121,26 +104,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       };
     }
   );
-
-  const handleStartRenameRecent = (item: RecentItem) => {
-    setActiveMenuId(null);
-    setEditingId(item.id || null);
-    setEditValue(item.title);
-  };
-
-  const handleSaveRenameRecent = async (item: RecentItem) => {
-    const trimmed = editValue.trim();
-    if (trimmed && trimmed !== item.title) {
-      await onRenameRecent?.(item, trimmed);
-    }
-    setEditingId(null);
-    setEditValue("");
-  };
-
-  const handleConfirmDeleteRecent = async (item: RecentItem) => {
-    await onDeleteRecent?.(item);
-    setDeleteConfirmId(null);
-  };
 
   const handleStartRenameCollection = (item: CollectionItem) => {
     setActiveMenuId(null);
@@ -163,446 +126,295 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleLogout = async () => {
-    if (onLogout) {
-      await onLogout();
-    } else {
-      try {
-        await signOut();
-      } catch (err) {
-        console.error("Error logging out:", err);
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      if (onLogout) {
+        await onLogout();
+      } else {
+        try {
+          await signOut();
+        } catch (err) {
+          console.error("Client sign out error:", err);
+        }
+        try {
+          await fetch("/api/auth/logout", { method: "POST" });
+        } catch (err) {
+          console.error("Server logout error:", err);
+        }
+        window.location.href = "/login";
       }
+    } catch (err) {
+      console.error("Logout error:", err);
       window.location.href = "/login";
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
-  const userInitial = userName ? userName.charAt(0).toUpperCase() : "U";
+  const isHomeActive =
+    activeItem === "Home" ||
+    activeItem === "Dashboard" ||
+    activeItem === "" ||
+    !activeItem;
 
   return (
     <aside
       ref={containerRef}
-      className={`w-64 h-full min-h-screen bg-white border-r border-slate-100/90 flex flex-col justify-between select-none shrink-0 font-sans text-sm text-slate-700 ${className}`}
+      className={`w-64 h-full min-h-screen bg-[#FDF8F3] border-r border-[#4E342E]/10 flex flex-col justify-between select-none shrink-0 font-sans ${className}`}
     >
-      {/* Header & Main Nav */}
-      <div className="flex flex-col flex-1 overflow-y-auto">
-        {/* Brand Header */}
-        <div className="px-5 py-5 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shrink-0">
-            <Bot className="w-5 h-5" />
-          </div>
-          <span className="font-bold text-slate-900 text-lg tracking-tight">
-            Skooler <span className="text-indigo-600">AI</span>
-          </span>
+      {/* Top Section */}
+      <div className="flex flex-col flex-1 overflow-y-auto px-4 pt-6">
+        {/* Brand Logo Header */}
+        <div className="px-2 pb-6 flex items-center">
+          <Link
+            href="/"
+            onClick={() => onSelectItem?.("Home")}
+            className="flex items-center gap-2 group transition-opacity hover:opacity-90 cursor-pointer"
+          >
+            <Image
+              src="/assets/logo.png"
+              alt="Skooler"
+              width={145}
+              height={46}
+              priority
+              className="h-10 w-auto object-contain"
+            />
+          </Link>
         </div>
 
-        {/* Navigation Content */}
-        <div className="px-3 py-2 flex flex-col gap-6">
-          {/* Main Item: Dashboard */}
-          <div>
-            <button
-              onClick={() => onSelectItem?.("Dashboard")}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md transition-all cursor-pointer text-sm font-semibold ${
-                activeItem === "Dashboard"
-                  ? "bg-indigo-50/80 text-indigo-600"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+        {/* Main Navigation Item: Home */}
+        <div className="mb-2">
+          <button
+            type="button"
+            onClick={() => onSelectItem?.("Home")}
+            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all cursor-pointer text-left ${
+              isHomeActive
+                ? "bg-[#4E342E] text-white shadow-sm"
+                : "text-[#4E342E] hover:bg-[#4E342E]/5"
+            }`}
+          >
+            <Home
+              className={`w-5 h-5 shrink-0 stroke-[2] ${
+                isHomeActive ? "text-white" : "text-[#4E342E]"
+              }`}
+            />
+            <span
+              className={`text-[15px] ${
+                isHomeActive ? "font-semibold text-white" : "font-medium text-[#4E342E]"
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Dashboard</span>
-            </button>
+              Home
+            </span>
+          </button>
+        </div>
+
+        {/* Collections Section */}
+        <div className="flex flex-col mt-4">
+          {/* Header with Title and Add Button */}
+          <div className="flex items-center justify-between px-2.5 py-2">
+            <span className="font-semibold text-[15px] text-[#4E342E]">
+              Collections
+            </span>
+            {onNewCollection && (
+              <button
+                type="button"
+                onClick={onNewCollection}
+                title="New Collection"
+                className="text-[#4E342E] hover:text-[#8D6E63] p-1 rounded-lg hover:bg-[#4E342E]/5 transition-colors cursor-pointer"
+              >
+                <Plus className="w-5 h-5 stroke-[2.2]" />
+              </button>
+            )}
           </div>
 
-          {/* Collections Section */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between px-3 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-              <span>Collections</span>
-              {onNewCollection && (
-                <button
-                  onClick={onNewCollection}
-                  title="Create New Collection"
-                  className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+          {/* Collections List */}
+          <div className="flex flex-col gap-1 mt-1">
+            {normalizedCollections.length === 0 && (
+              <p className="px-2.5 py-2 text-xs text-[#8D6E63] italic">
+                No collections yet
+              </p>
+            )}
 
-            <div className="flex flex-col gap-0.5">
-              {normalizedCollections.length === 0 && (
-                <p className="px-3 py-1.5 text-[11px] text-slate-400 italic">
-                  No collections yet
-                </p>
-              )}
-              {normalizedCollections.map((collection) => {
-                const isSelected =
-                  activeItem === collection.name || activeItem === collection.id;
-                const isEditing = editingId === collection.id;
-                const isDeleting = deleteConfirmId === collection.id;
-                const isMenuOpen = activeMenuId === collection.id;
+            {normalizedCollections.map((collection) => {
+              const isSelected =
+                activeItem === collection.name || activeItem === collection.id;
+              const isEditing = editingId === collection.id;
+              const isDeleting = deleteConfirmId === collection.id;
+              const isMenuOpen = activeMenuId === collection.id;
 
-                if (isEditing) {
-                  return (
-                    <form
-                      key={collection.id}
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSaveRenameCollection(collection);
-                      }}
-                      className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 border border-indigo-200 rounded-md"
+              if (isEditing) {
+                return (
+                  <form
+                    key={collection.id}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSaveRenameCollection(collection);
+                    }}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 bg-[#4E342E]/5 border border-[#4E342E]/20 rounded-xl"
+                  >
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      className="flex-1 min-w-0 px-2 py-0.5 text-xs bg-white border border-[#8D6E63]/30 rounded-lg text-[#4E342E] focus:outline-none focus:ring-1 focus:ring-[#4E342E]"
+                      autoFocus
+                    />
+                    <button
+                      type="submit"
+                      className="p-1 text-[#6B8F71] hover:bg-[#6B8F71]/10 rounded-md transition-colors cursor-pointer"
+                      title="Save"
                     >
-                      <input
-                        type="text"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="flex-1 min-w-0 px-2 py-0.5 text-xs bg-white border border-slate-300 rounded-md text-slate-900 focus:outline-none focus:border-indigo-500 font-sans"
-                        autoFocus
-                      />
-                      <button
-                        type="submit"
-                        className="p-1 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-colors cursor-pointer"
-                        title="Save title"
-                      >
-                        <Check className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingId(null)}
-                        className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors cursor-pointer"
-                        title="Cancel"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </form>
-                  );
-                }
-
-                if (isDeleting) {
-                  return (
-                    <div
-                      key={collection.id}
-                      className="flex items-center justify-between px-2.5 py-1.5 bg-red-50 border border-red-200 rounded-md text-xs"
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingId(null)}
+                      className="p-1 text-[#8D6E63] hover:bg-[#4E342E]/10 rounded-md transition-colors cursor-pointer"
+                      title="Cancel"
                     >
-                      <span className="text-red-700 font-medium text-[11px] truncate">
-                        Delete?
-                      </span>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => handleConfirmDeleteCollection(collection)}
-                          className="px-2 py-0.5 text-[10px] font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer"
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirmId(null)}
-                          className="px-2 py-0.5 text-[10px] font-medium bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors cursor-pointer"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  );
-                }
+                      <X className="w-3.5 h-3.5 stroke-[2.5]" />
+                    </button>
+                  </form>
+                );
+              }
 
+              if (isDeleting) {
                 return (
                   <div
                     key={collection.id}
-                    className="relative group flex items-center justify-between w-full"
+                    className="flex items-center justify-between px-2.5 py-2 bg-[#E57373]/10 border border-[#E57373]/30 rounded-xl text-xs"
                   >
-                    <button
-                      onClick={() => onSelectItem?.(collection)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-all text-left cursor-pointer ${
-                        isSelected
-                          ? "bg-indigo-50/80 text-indigo-900 font-semibold"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 truncate pr-4">
-                        <Folder className="w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0" />
-                        <span className="truncate">{collection.name}</span>
-                      </div>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                    </button>
-
-                    {/* Three Dots Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveMenuId(isMenuOpen ? null : collection.id || null);
-                      }}
-                      className={`absolute right-1.5 p-1 rounded-md hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 transition-all cursor-pointer ${
-                        isMenuOpen ? "opacity-100 bg-slate-200/80 text-slate-700" : "opacity-0 group-hover:opacity-100"
-                      }`}
-                      title="Options"
-                    >
-                      <MoreVertical className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isMenuOpen && (
-                      <div
-                        className="absolute right-0 top-8 w-32 bg-white border border-slate-200 rounded-md shadow-lg z-30 py-1 text-xs"
-                        onClick={(e) => e.stopPropagation()}
+                    <span className="text-[#E57373] font-medium text-xs truncate">
+                      Delete?
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => handleConfirmDeleteCollection(collection)}
+                        className="px-2 py-0.5 text-[11px] font-semibold bg-[#E57373] text-white rounded-md hover:bg-[#E57373]/90 transition-colors cursor-pointer"
                       >
-                        <button
-                          type="button"
-                          onClick={() => handleStartRenameCollection(collection)}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:bg-slate-50 text-left transition-colors cursor-pointer"
-                        >
-                          <Pencil className="w-3 h-3 text-slate-400" />
-                          <span>Rename</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveMenuId(null);
-                            setDeleteConfirmId(collection.id || null);
-                          }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-red-600 hover:bg-red-50 text-left transition-colors cursor-pointer font-medium"
-                        >
-                          <Trash2 className="w-3 h-3 text-red-500" />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    )}
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirmId(null)}
+                        className="px-2 py-0.5 text-[11px] font-medium bg-[#8D6E63]/20 text-[#4E342E] rounded-md hover:bg-[#8D6E63]/30 transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 );
-              })}
-            </div>
-          </div>
+              }
 
-          {/* Recently Studied Section */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between px-3 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
-              <span>Recently Studied</span>
-              {onNewLearning && (
-                <button
-                  onClick={onNewLearning}
-                  title="Start new learning"
-                  className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+              return (
+                <div
+                  key={collection.id}
+                  className="relative group flex items-center justify-between w-full"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => onSelectItem?.(collection)}
+                    className={`w-full flex items-center justify-between px-2.5 py-2.5 rounded-xl text-left transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-[#4E342E]/10 font-semibold"
+                        : "hover:bg-[#4E342E]/5"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0 pr-3">
+                      <Folder className="w-5 h-5 text-[#4E342E] shrink-0 stroke-[1.8]" />
+                      <span className="text-[14px] font-medium text-[#4E342E] truncate">
+                        {collection.name}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#4E342E] shrink-0 stroke-[2.2] group-hover:translate-x-0.5 transition-transform" />
+                  </button>
 
-            <div className="flex flex-col gap-0.5">
-              {normalizedRecents.length === 0 && (
-                <p className="px-3 py-1.5 text-[11px] text-slate-400 italic">
-                  Nothing studied yet
-                </p>
-              )}
-              {normalizedRecents.map((item) => {
-                const isSelected =
-                  activeItem === item.title || activeItem === item.id;
-                const isEditing = editingId === item.id;
-                const isDeleting = deleteConfirmId === item.id;
-                const isMenuOpen = activeMenuId === item.id;
+                  {/* Options Dots button (revealed on group hover) */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveMenuId(isMenuOpen ? null : collection.id || null);
+                    }}
+                    className={`absolute right-6 p-1 rounded-md text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 transition-all cursor-pointer ${
+                      isMenuOpen ? "opacity-100 bg-[#4E342E]/10" : "opacity-0 group-hover:opacity-100"
+                    }`}
+                    title="Collection Options"
+                  >
+                    <MoreVertical className="w-3.5 h-3.5" />
+                  </button>
 
-                if (isEditing) {
-                  return (
-                    <form
-                      key={item.id}
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSaveRenameRecent(item);
-                      }}
-                      className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 border border-indigo-200 rounded-md"
+                  {/* Dropdown Menu for Rename/Delete */}
+                  {isMenuOpen && (
+                    <div
+                      className="absolute right-2 top-9 w-32 bg-[#FDF8F3] border border-[#4E342E]/15 rounded-xl shadow-lg z-30 py-1 text-xs"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <input
-                        type="text"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="flex-1 min-w-0 px-2 py-0.5 text-xs bg-white border border-slate-300 rounded-md text-slate-900 focus:outline-none focus:border-indigo-500 font-sans"
-                        autoFocus
-                      />
                       <button
-                        type="submit"
-                        className="p-1 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md transition-colors cursor-pointer"
-                        title="Save title"
+                        type="button"
+                        onClick={() => handleStartRenameCollection(collection)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-[#4E342E] hover:bg-[#4E342E]/10 text-left transition-colors cursor-pointer font-medium"
                       >
-                        <Check className="w-3.5 h-3.5" />
+                        <Pencil className="w-3.5 h-3.5 text-[#8D6E63]" />
+                        <span>Rename</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => setEditingId(null)}
-                        className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 rounded-md transition-colors cursor-pointer"
-                        title="Cancel"
+                        onClick={() => {
+                          setActiveMenuId(null);
+                          setDeleteConfirmId(collection.id || null);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-[#E57373] hover:bg-[#E57373]/10 text-left transition-colors cursor-pointer font-medium"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 text-[#E57373]" />
+                        <span>Delete</span>
                       </button>
-                    </form>
-                  );
-                }
-
-                if (isDeleting) {
-                  return (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between px-2.5 py-1.5 bg-red-50 border border-red-200 rounded-md text-xs"
-                    >
-                      <span className="text-red-700 font-medium text-[11px] truncate">
-                        Delete?
-                      </span>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => handleConfirmDeleteRecent(item)}
-                          className="px-2 py-0.5 text-[10px] font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer"
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirmId(null)}
-                          className="px-2 py-0.5 text-[10px] font-medium bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors cursor-pointer"
-                        >
-                          Cancel
-                        </button>
-                      </div>
                     </div>
-                  );
-                }
-
-                return (
-                  <div
-                    key={item.id}
-                    className="relative group flex items-center justify-between w-full"
-                  >
-                    <button
-                      onClick={() => onSelectItem?.(item)}
-                      className={`w-full flex items-start gap-3 px-3 py-2 rounded-md text-xs transition-all text-left cursor-pointer ${
-                        isSelected
-                          ? "bg-slate-100 text-slate-900 font-medium"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                      }`}
-                    >
-                      <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                      <div className="flex flex-col min-w-0 flex-1 pr-4">
-                        <span className="truncate text-slate-800 font-medium text-xs">
-                          {item.title}
-                        </span>
-                        {item.timeAgo && (
-                          <span
-                            className="text-[10px] text-slate-400"
-                            suppressHydrationWarning
-                          >
-                            {item.timeAgo}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-
-                    {/* Three Dots Button */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveMenuId(isMenuOpen ? null : item.id || null);
-                      }}
-                      className={`absolute right-1.5 top-2 p-1 rounded-md hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 transition-all cursor-pointer ${
-                        isMenuOpen ? "opacity-100 bg-slate-200/80 text-slate-700" : "opacity-0 group-hover:opacity-100"
-                      }`}
-                      title="Options"
-                    >
-                      <MoreVertical className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isMenuOpen && (
-                      <div
-                        className="absolute right-0 top-8 w-36 bg-white border border-slate-200 rounded-md shadow-lg z-30 py-1 text-xs font-medium"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {onAddToCollection && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                              onAddToCollection(item);
-                            }}
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:bg-slate-50 text-left transition-colors cursor-pointer"
-                          >
-                            <FolderInput className="w-3 h-3 text-slate-400" />
-                            <span>Add to Collection</span>
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleStartRenameRecent(item)}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:bg-slate-50 text-left transition-colors cursor-pointer"
-                        >
-                          <Pencil className="w-3 h-3 text-slate-400" />
-                          <span>Rename</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveMenuId(null);
-                            setDeleteConfirmId(item.id || null);
-                          }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-red-600 hover:bg-red-50 text-left transition-colors cursor-pointer font-medium"
-                        >
-                          <Trash2 className="w-3 h-3 text-red-500" />
-                          <span>Delete</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Footer Section */}
-      <div className="p-3 border-t border-slate-100 flex flex-col gap-1 bg-white relative">
-        <button
-          onClick={() => onSelectItem?.("Settings")}
-          className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-md text-xs transition-all cursor-pointer font-medium ${
-            activeItem === "Settings"
-              ? "bg-slate-100 text-slate-900"
-              : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-          }`}
-        >
-          <Settings className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>Settings</span>
-        </button>
-
-        {/* User Profile Bar */}
-        <div className="relative">
-          <button
-            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs text-slate-800 font-medium hover:bg-slate-50 transition-all cursor-pointer"
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0">
-                {userInitial}
-              </div>
-              <div className="flex flex-col text-left truncate">
-                <span className="truncate font-semibold text-slate-900 leading-tight">
-                  {userName}
-                </span>
-                <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                  Online
-                </span>
-              </div>
+      {/* Footer Section: User Profile & Dedicated Logout */}
+      <div className="p-3 border-t border-[#4E342E]/10 flex flex-col gap-2 shrink-0 bg-[#FDF8F3]">
+        <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#4E342E]/5 border border-[#4E342E]/10">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-[#4E342E] text-white flex items-center justify-center text-xs font-semibold shrink-0">
+              {userName ? userName.charAt(0).toUpperCase() : "U"}
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          </button>
-
-          {/* Profile / Logout Menu */}
-          {isProfileMenuOpen && (
-            <div className="absolute bottom-12 left-0 w-full bg-white border border-slate-200 rounded-md shadow-lg p-1 text-xs z-30">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-md text-left transition-colors cursor-pointer font-medium"
-              >
-                <LogOut className="w-3.5 h-3.5 text-red-500" />
-                <span>Log out</span>
-              </button>
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-semibold text-[#4E342E] truncate">
+                {userName || "User"}
+              </span>
+              <span className="text-[10px] text-[#6B8F71] font-medium flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6B8F71]" />
+                Active
+              </span>
             </div>
-          )}
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#C62828] hover:bg-[#E57373]/10 border border-[#E57373]/25 bg-white/50 hover:border-[#E57373]/40 transition-all cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+        >
+          {isLoggingOut ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Logging out...</span>
+            </>
+          ) : (
+            <>
+              <LogOut className="w-3.5 h-3.5 text-[#E57373]" />
+              <span>Log out</span>
+            </>
+          )}
+        </button>
       </div>
     </aside>
   );
