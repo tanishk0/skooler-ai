@@ -47,22 +47,22 @@ export const DrawerOverlay: React.FC<DrawerOverlayProps> = ({
 
       {/* Drawer Panel */}
       <div
-        className={`relative z-10 flex flex-col w-72 sm:w-80 max-w-[85vw] h-full bg-white shadow-2xl transition-transform duration-300 ease-out animate-in ${
+        className={`relative z-10 flex flex-col w-72 sm:w-80 max-w-[85vw] h-full bg-[#FDF8F3] shadow-2xl transition-transform duration-300 ease-out animate-in ${
           position === "left"
-            ? "slide-in-from-left justify-start border-r border-slate-200"
-            : "ml-auto slide-in-from-right justify-end border-l border-slate-200"
+            ? "slide-in-from-left justify-start border-r border-[#4E342E]/15"
+            : "ml-auto slide-in-from-right justify-end border-l border-[#4E342E]/15"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
-            <h3 className="font-semibold text-slate-800 text-sm truncate min-w-0 pr-2">
+          <div className="px-4 py-3.5 border-b border-[#4E342E]/10 flex items-center justify-between bg-[#FDF8F3] shrink-0">
+            <h3 className="font-semibold text-[#4E342E] text-sm truncate min-w-0 pr-2">
               {title}
             </h3>
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer shrink-0"
+              className="p-1 rounded-lg text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 transition-colors cursor-pointer shrink-0"
               aria-label="Close drawer"
             >
               <X className="w-4 h-4" />
