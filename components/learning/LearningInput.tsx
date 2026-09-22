@@ -97,10 +97,10 @@ export const LearningInput: React.FC<LearningInputProps> = ({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-full bg-white rounded-md border transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between min-h-[140px] shadow-xs ${
+        className={`w-full bg-white rounded-2xl border transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between min-h-[140px] shadow-xs ${
           isDragging
-            ? "border-2 border-dashed border-indigo-400 bg-indigo-50/20"
-            : "border-slate-200/80 focus-within:border-indigo-300 focus-within:shadow-md"
+            ? "border-2 border-dashed border-[#4E342E] bg-[#4E342E]/5"
+            : "border-[#4E342E]/12 focus-within:border-[#4E342E]/35 focus-within:shadow-md"
         }`}
       >
         <input
@@ -119,26 +119,26 @@ export const LearningInput: React.FC<LearningInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder="Ask anything, paste notes, or drop a file..."
           rows={3}
-          className="w-full bg-transparent text-slate-800 placeholder-slate-400 text-sm sm:text-base focus:outline-none resize-none leading-relaxed"
+          className="w-full bg-transparent text-[#4E342E] placeholder-[#8D6E63]/60 text-sm sm:text-base focus:outline-none resize-none leading-relaxed"
         />
 
         {/* Attached Files List */}
         {files.length > 0 && (
-          <div className="flex flex-wrap gap-2 py-2 border-t border-slate-100 my-2 min-w-0">
+          <div className="flex flex-wrap gap-2 py-2 border-t border-[#4E342E]/10 my-2 min-w-0">
             {files.map((file, idx) => (
               <div
                 key={idx}
-                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-800 text-xs font-medium min-w-0 max-w-full"
+                className="inline-flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[#4E342E]/5 border border-[#4E342E]/15 text-[#4E342E] text-xs font-medium min-w-0 max-w-full"
               >
-                <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-[#8D6E63] shrink-0" />
                 <span className="max-w-[120px] sm:max-w-[200px] truncate min-w-0">{file.name}</span>
-                <span className="text-slate-400 text-[10px] shrink-0">
+                <span className="text-[#8D6E63] text-[10px] shrink-0">
                   ({formatFileSize(file.size)})
                 </span>
                 <button
                   type="button"
                   onClick={() => removeFile(idx)}
-                  className="p-0.5 rounded-md hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer shrink-0"
+                  className="p-0.5 rounded-md hover:bg-[#4E342E]/10 text-[#8D6E63] hover:text-[#4E342E] transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -148,13 +148,13 @@ export const LearningInput: React.FC<LearningInputProps> = ({
         )}
 
         {/* Bottom Toolbar */}
-        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100/60 min-w-0">
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#4E342E]/10 min-w-0">
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               title="Attach PDF or DOCX file"
-              className="w-9 h-9 rounded-md bg-slate-100/90 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-xl bg-[#4E342E]/5 hover:bg-[#4E342E]/10 text-[#4E342E] flex items-center justify-center transition-colors cursor-pointer"
             >
               <Paperclip className="w-4 h-4" />
             </button>
@@ -162,7 +162,7 @@ export const LearningInput: React.FC<LearningInputProps> = ({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               title="Add file or notes"
-              className="w-9 h-9 rounded-md bg-slate-100/90 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-xl bg-[#4E342E]/5 hover:bg-[#4E342E]/10 text-[#4E342E] flex items-center justify-center transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -171,7 +171,7 @@ export const LearningInput: React.FC<LearningInputProps> = ({
           <button
             type="submit"
             disabled={isLoading || (!text.trim() && files.length === 0)}
-            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm shadow-xs disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-[#4E342E] hover:bg-[#3D2924] active:scale-[0.99] text-white font-semibold text-xs sm:text-sm shadow-xs disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0"
           >
             {isLoading ? (
               <>
@@ -190,13 +190,13 @@ export const LearningInput: React.FC<LearningInputProps> = ({
 
       {/* Suggestion Chip */}
       <div className="flex flex-wrap items-center gap-2 text-xs min-w-0">
-        <div className="flex items-center gap-1 text-indigo-600 font-bold shrink-0">
+        <div className="flex items-center gap-1 text-[#4E342E] font-bold shrink-0">
           <span>Try:</span>
         </div>
         <button
           type="button"
           onClick={() => setText(`"${SUGGESTION}"`)}
-          className="bg-indigo-50/90 hover:bg-indigo-100 text-indigo-700 font-medium text-xs px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-md cursor-pointer transition-colors text-left break-words max-w-full"
+          className="bg-[#4E342E]/5 hover:bg-[#4E342E]/10 text-[#4E342E] border border-[#4E342E]/10 font-medium text-xs px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl cursor-pointer transition-colors text-left break-words max-w-full"
         >
           &ldquo;{SUGGESTION}&rdquo;
         </button>

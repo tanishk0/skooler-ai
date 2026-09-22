@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/auth-client";
 import Sidebar, { RecentItem, CollectionItem } from "@/components/sidebar/Sidebar";
 import MobileHeader from "@/components/layout/MobileHeader";
 import DrawerOverlay from "@/components/layout/DrawerOverlay";
@@ -152,7 +153,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       } else {
         router.push(`/learn/${item.id}`);
       }
-    } else if (item === "Dashboard") {
+    } else if (item === "Dashboard" || item === "Home") {
       router.push("/");
     }
   };
@@ -226,22 +227,37 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   }));
 
   const getRecentIcon = () => (
-    <div className="w-9 h-9 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+    <div className="w-9 h-9 rounded-xl bg-[#6B8F71]/10 text-[#6B8F71] flex items-center justify-center shrink-0">
       <Sprout className="w-4 h-4" />
     </div>
   );
 
   const getRecentProgressBarColor = (index: number) => {
-    const colors = ["bg-emerald-500", "bg-amber-500", "bg-indigo-600"];
+    const colors = ["bg-[#6B8F71]", "bg-[#F4A261]", "bg-[#4E342E]"];
     return colors[index % colors.length];
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error("Client sign out error:", err);
+    }
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Server logout error:", err);
+    }
+    window.location.href = "/login";
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#f9fafb] font-sans overflow-x-hidden">
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-[#FDF8F3] font-sans overflow-x-hidden">
       {/* Mobile Header */}
       <MobileHeader
         title="Dashboard"
         onMenuClick={() => setIsMobileSidebarOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Mobile Sidebar Drawer Overlay */}
@@ -298,17 +314,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="w-full max-w-4xl flex flex-col gap-6 sm:gap-9 py-2 sm:py-4 min-w-0">
           {/* Greeting Header */}
           <div className="flex flex-col gap-1 min-w-0">
-            <span className="text-xs sm:text-sm font-medium text-slate-500 truncate">
+            <span className="text-xs sm:text-sm font-medium text-[#8D6E63] truncate">
               Good to see you, {userName}.
             </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight leading-tight break-words">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#4E342E] tracking-tight leading-tight break-words">
               What do you want to understand?
             </h1>
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 p-3.5 rounded-md bg-red-50 border border-red-200 text-red-700 text-xs font-medium min-w-0">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+            <div className="flex items-center gap-2 p-3.5 rounded-xl bg-[#E57373]/10 border border-[#E57373]/30 text-[#E57373] text-xs font-medium min-w-0">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#E57373]" />
               <span className="break-words min-w-0 flex-1">{error}</span>
             </div>
           )}
@@ -322,24 +338,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* YOUR COLLECTIONS Section */}
           <div className="flex flex-col gap-3 sm:gap-4 min-w-0">
             <div className="flex items-center justify-between gap-2 min-w-0">
-              <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
+              <h2 className="text-xs font-bold text-[#8D6E63] uppercase tracking-wider truncate">
                 Your Collections
               </h2>
 
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-semibold transition-colors cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#4E342E] hover:bg-[#3D2924] text-white text-xs font-semibold transition-colors cursor-pointer shrink-0 shadow-2xs"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 stroke-[2.2]" />
                 <span>New collection</span>
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-w-0">
               {collectionsList.length === 0 && (
-                <div className="sm:col-span-2 lg:col-span-3 flex items-center gap-3 p-4 rounded-md border border-dashed border-slate-200 bg-white text-sm text-slate-500">
-                  <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+                <div className="sm:col-span-2 lg:col-span-3 flex items-center gap-3 p-4 rounded-2xl border border-dashed border-[#4E342E]/20 bg-white text-sm text-[#8D6E63]">
+                  <Sparkles className="w-4 h-4 text-[#F4A261] shrink-0" />
                   <span>
                     No collections yet — create one to organize your learning topics.
                   </span>
@@ -357,17 +373,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <div
                     key={col.id}
                     onClick={() => router.push(`/collections/${col.id}`)}
-                    className="group p-4 sm:p-5 rounded-md border border-slate-200/80 bg-white hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between min-h-[160px] sm:min-h-[170px] min-w-0"
+                    className="group p-4 sm:p-5 rounded-2xl border border-[#4E342E]/10 bg-white hover:border-[#4E342E]/30 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between min-h-[160px] sm:min-h-[170px] min-w-0"
                   >
                     <div className="min-w-0">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shrink-0">
-                        <Folder className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#4E342E]/5 text-[#4E342E] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform shrink-0">
+                        <Folder className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.8]" />
                       </div>
 
-                      <h3 className="font-bold text-slate-900 text-sm sm:text-base group-hover:text-indigo-600 transition-colors truncate">
+                      <h3 className="font-bold text-[#4E342E] text-sm sm:text-base group-hover:text-[#6D4C41] transition-colors truncate">
                         {col.name}
                       </h3>
-                      <p className="text-xs text-slate-400 mt-0.5 truncate">
+                      <p className="text-xs text-[#8D6E63] mt-0.5 truncate">
                         {col.topicCount || 0} {col.topicCount === 1 ? "topic" : "topics"}
                       </p>
                     </div>
@@ -376,13 +392,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       {/* Real Progress bar if available */}
                       {hasProgress && (
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden min-w-0">
+                          <div className="flex-1 h-1.5 bg-[#4E342E]/10 rounded-full overflow-hidden min-w-0">
                             <div
-                              className="bg-indigo-600 h-full rounded-full"
+                              className="bg-[#6B8F71] h-full rounded-full"
                               style={{ width: `${progress}%` }}
                             />
                           </div>
-                          <span className="text-xs font-medium text-slate-500 shrink-0">
+                          <span className="text-xs font-medium text-[#8D6E63] shrink-0">
                             {progress}%
                           </span>
                         </div>
@@ -390,12 +406,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                       <div className="flex items-center justify-between text-xs min-w-0">
                         <span
-                          className="text-slate-400 text-[11px] truncate pr-2"
+                          className="text-[#8D6E63] text-[11px] truncate pr-2"
                           suppressHydrationWarning
                         >
                           {lastStudied}
                         </span>
-                        <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform shrink-0" />
+                        <ArrowRight className="w-4 h-4 text-[#4E342E] group-hover:translate-x-1 transition-transform shrink-0" />
                       </div>
                     </div>
                   </div>
@@ -405,13 +421,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               {/* New Collection Dashed Card */}
               <div
                 onClick={() => setIsCreateModalOpen(true)}
-                className="border-2 border-dashed border-indigo-200/90 rounded-md bg-indigo-50/20 p-5 sm:p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-indigo-50/50 hover:border-indigo-300 transition-all min-h-[160px] sm:min-h-[170px] min-w-0"
+                className="border-2 border-dashed border-[#4E342E]/20 rounded-2xl bg-[#4E342E]/[0.02] p-5 sm:p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#4E342E]/5 hover:border-[#4E342E]/35 transition-all min-h-[160px] sm:min-h-[170px] min-w-0"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-indigo-100 text-indigo-600 flex items-center justify-center mb-2 shrink-0">
-                  <Plus className="w-5 h-5" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#4E342E]/10 text-[#4E342E] flex items-center justify-center mb-2 shrink-0">
+                  <Plus className="w-5 h-5 stroke-[2.2]" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm truncate max-w-full">New collection</h4>
-                <p className="text-xs text-slate-400 max-w-[160px] mt-0.5 leading-relaxed">
+                <h4 className="font-bold text-[#4E342E] text-sm truncate max-w-full">New collection</h4>
+                <p className="text-xs text-[#8D6E63] max-w-[160px] mt-0.5 leading-relaxed">
                   Organize your learnings in one place
                 </p>
               </div>
@@ -420,20 +436,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* RECENTLY STUDIED Section */}
           <div className="flex flex-col gap-3 sm:gap-4 min-w-0">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate">
+            <h2 className="text-xs font-bold text-[#8D6E63] uppercase tracking-wider truncate">
               Recently Studied
             </h2>
 
             {recentsList.length === 0 ? (
-              <div className="flex items-center gap-3 p-4 rounded-md border border-dashed border-slate-200 bg-white text-sm text-slate-500">
-                <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+              <div className="flex items-center gap-3 p-4 rounded-2xl border border-dashed border-[#4E342E]/20 bg-white text-sm text-[#8D6E63]">
+                <Sparkles className="w-4 h-4 text-[#F4A261] shrink-0" />
                 <span>
                   Nothing here yet — type any topic above to start your first
                   learning session.
                 </span>
               </div>
             ) : (
-              <div className="bg-white rounded-md border border-slate-200/80 shadow-xs overflow-hidden divide-y divide-slate-100 min-w-0">
+              <div className="bg-white rounded-2xl border border-[#4E342E]/10 shadow-xs overflow-hidden divide-y divide-[#4E342E]/5 min-w-0">
                 {recentsList.map((item, idx) => {
                 const hasMastery = typeof item.mastery === "number" && item.mastery > 0;
                 const masteryVal = hasMastery ? Math.min(100, Math.max(0, item.mastery!)) : 0;
@@ -443,17 +459,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   <div
                     key={item.id || idx}
                     onClick={() => handleSelectItem(item)}
-                    className="p-3.5 sm:p-4 hover:bg-slate-50/60 transition-colors flex items-center gap-3 sm:gap-4 cursor-pointer group min-w-0"
+                    className="p-3.5 sm:p-4 hover:bg-[#4E342E]/[0.02] transition-colors flex items-center gap-3 sm:gap-4 cursor-pointer group min-w-0"
                   >
                     {getRecentIcon()}
 
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-bold text-slate-900 text-xs sm:text-sm truncate">
+                      <h4 className="font-bold text-[#4E342E] text-xs sm:text-sm truncate group-hover:text-[#6D4C41] transition-colors">
                         {item.title}
                       </h4>
                       {item.timeAgo && (
                         <p
-                          className="text-[11px] text-slate-400 sm:hidden"
+                          className="text-[11px] text-[#8D6E63] sm:hidden"
                           suppressHydrationWarning
                         >
                           {item.timeAgo}
@@ -464,13 +480,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     {/* Real Progress Bar & Percentage if available */}
                     {hasMastery && (
                       <div className="hidden sm:flex w-28 md:w-44 flex items-center gap-2.5 shrink-0">
-                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden min-w-0">
+                        <div className="flex-1 h-1.5 bg-[#4E342E]/10 rounded-full overflow-hidden min-w-0">
                           <div
                             className={`h-full rounded-full ${barColor}`}
                             style={{ width: `${masteryVal}%` }}
                           />
                         </div>
-                        <span className="text-xs font-medium text-slate-500 shrink-0">
+                        <span className="text-xs font-medium text-[#8D6E63] shrink-0">
                           {masteryVal}%
                         </span>
                       </div>
@@ -478,14 +494,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
                     {/* Relative Date (desktop) */}
                     <span
-                      className="hidden sm:inline text-xs text-slate-400 text-right shrink-0"
+                      className="hidden sm:inline text-xs text-[#8D6E63] text-right shrink-0"
                       suppressHydrationWarning
                     >
                       {item.timeAgo || "Recently"}
                     </span>
 
                     {/* Right Arrow */}
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700 group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-[#8D6E63] group-hover:text-[#4E342E] group-hover:translate-x-0.5 transition-all shrink-0" />
                   </div>
                 );
               })}
