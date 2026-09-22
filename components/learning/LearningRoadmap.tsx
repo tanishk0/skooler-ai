@@ -113,13 +113,13 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
   return (
     <aside
       ref={containerRef}
-      className={`w-72 sm:w-80 h-full min-h-screen bg-white border-r border-slate-100/90 flex flex-col justify-between shrink-0 select-none p-5 sm:p-6 font-sans overflow-y-auto min-w-0 ${className}`}
+      className={`w-72 sm:w-80 h-full min-h-screen bg-[#FDF8F3] border-r border-[#4E342E]/10 flex flex-col justify-between shrink-0 select-none p-5 sm:p-6 font-sans overflow-y-auto min-w-0 ${className}`}
     >
       <div className="flex flex-col gap-6 min-w-0">
         {/* Back to Dashboard Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors shrink-0"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#8D6E63] hover:text-[#4E342E] transition-colors shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Dashboard</span>
@@ -128,28 +128,28 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
         {/* Topic Title & Progress Ratio */}
         <div className="flex flex-col gap-2 min-w-0">
           {modules && modules.length > 0 ? (
-            <div className="flex items-center justify-between text-[11px] font-bold tracking-wider text-indigo-700 uppercase min-w-0">
+            <div className="flex items-center justify-between text-[11px] font-bold tracking-wider text-[#4E342E] uppercase min-w-0">
               <span className="truncate">Module {currentModuleIndex + 1} of {modules.length}</span>
-              <span className="text-slate-400 font-mono text-[10px] shrink-0 ml-2">{currentRatio} concepts</span>
+              <span className="text-[#8D6E63] font-mono text-[10px] shrink-0 ml-2">{currentRatio} concepts</span>
             </div>
           ) : (
-            <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase truncate">
+            <span className="text-[10px] font-bold text-[#8D6E63] tracking-wider uppercase truncate">
               {topic}
             </span>
           )}
-          <h1 className="font-serif text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug break-words min-w-0">
+          <h1 className="font-serif text-lg sm:text-xl font-bold text-[#4E342E] tracking-tight leading-snug break-words min-w-0">
             {topic}
           </h1>
 
           {/* Progress Bar & Ratio */}
           <div className="flex items-center gap-3 pt-1">
-            <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div className="flex-1 h-1.5 rounded-full bg-[#4E342E]/10 overflow-hidden">
               <div
-                className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                className="h-full bg-[#6B8F71] rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-xs font-medium text-slate-400 shrink-0">
+            <span className="text-xs font-medium text-[#8D6E63] shrink-0">
               {progressPercent}%
             </span>
           </div>
@@ -157,14 +157,14 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
 
         {/* Syllabus Section */}
         <div className="flex flex-col gap-4 mt-2">
-          <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+          <span className="text-[11px] font-bold tracking-wider text-[#8D6E63] uppercase">
             SYLLABUS
           </span>
 
           <div className="relative flex flex-col gap-6 pl-1">
             {/* Vertical Connecting Line */}
             {concepts.length > 1 && (
-              <div className="absolute left-[11px] top-3 bottom-3 w-[2px] bg-slate-200 -z-0" />
+              <div className="absolute left-[11px] top-3 bottom-3 w-[2px] bg-[#4E342E]/15 -z-0" />
             )}
 
             {concepts.map((concept, idx) => {
@@ -196,18 +196,18 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                       e.preventDefault();
                       handleSaveRename(concept);
                     }}
-                    className="relative z-10 flex items-center gap-1.5 p-2 bg-white border border-indigo-200 rounded-md shadow-xs"
+                    className="relative z-10 flex items-center gap-1.5 p-2 bg-white border border-[#4E342E]/20 rounded-xl shadow-xs"
                   >
                     <input
                       type="text"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      className="flex-1 min-w-0 px-2 py-0.5 text-xs border border-slate-300 rounded-md text-slate-900 focus:outline-none focus:border-indigo-500 font-sans"
+                      className="flex-1 min-w-0 px-2 py-0.5 text-xs border border-[#4E342E]/20 rounded-lg text-[#4E342E] focus:outline-none focus:border-[#4E342E] font-sans"
                       autoFocus
                     />
                     <button
                       type="submit"
-                      className="p-1 text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors cursor-pointer"
+                      className="p-1 text-[#6B8F71] hover:bg-[#6B8F71]/10 rounded-md transition-colors cursor-pointer"
                       title="Save"
                     >
                       <Check className="w-3.5 h-3.5" />
@@ -215,7 +215,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
-                      className="p-1 text-slate-400 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+                      className="p-1 text-[#8D6E63] hover:bg-[#4E342E]/10 rounded-md transition-colors cursor-pointer"
                       title="Cancel"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -228,21 +228,21 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                 return (
                   <div
                     key={concept.id || idx}
-                    className="relative z-10 flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded-md text-xs"
+                    className="relative z-10 flex items-center justify-between p-2 bg-[#E57373]/10 border border-[#E57373]/30 rounded-xl text-xs"
                   >
-                    <span className="text-red-700 font-medium text-[11px] truncate">
+                    <span className="text-[#E57373] font-medium text-[11px] truncate">
                       Delete module?
                     </span>
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => handleConfirmDelete(concept)}
-                        className="px-2 py-0.5 text-[10px] font-bold bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors cursor-pointer"
+                        className="px-2 py-0.5 text-[10px] font-bold bg-[#E57373] text-white rounded-md hover:bg-[#E57373]/90 transition-colors cursor-pointer"
                       >
                         Delete
                       </button>
                       <button
                         onClick={() => setDeleteConfirmId(null)}
-                        className="px-2 py-0.5 text-[10px] font-medium bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors cursor-pointer"
+                        className="px-2 py-0.5 text-[10px] font-medium bg-[#4E342E]/10 text-[#4E342E] rounded-md hover:bg-[#4E342E]/20 transition-colors cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -254,8 +254,8 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
               return (
                 <React.Fragment key={concept.id || idx}>
                   {isNewModule && conceptModule && (
-                    <div className="relative z-10 pt-2 pb-1 text-[10px] font-bold tracking-wider text-indigo-600 uppercase flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+                    <div className="relative z-10 pt-2 pb-1 text-[10px] font-bold tracking-wider text-[#4E342E] uppercase flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#4E342E]" />
                       <span>{conceptModule.name}</span>
                     </div>
                   )}
@@ -264,15 +264,15 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                     {/* Node Circle */}
                     <div className="shrink-0 pt-0.5">
                       {isMastered ? (
-                        <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+                        <div className="w-6 h-6 rounded-full bg-[#6B8F71] text-white flex items-center justify-center shadow-2xs">
                           <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                         </div>
                       ) : isCurrent ? (
-                        <div className="w-6 h-6 rounded-full bg-indigo-50/50 border-2 border-indigo-600 flex items-center justify-center shadow-xs">
-                          <CircleDot className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600" />
+                        <div className="w-6 h-6 rounded-full bg-white border-2 border-[#4E342E] flex items-center justify-center shadow-2xs">
+                          <CircleDot className="w-3.5 h-3.5 text-[#4E342E] fill-[#4E342E]" />
                         </div>
                       ) : (
-                        <div className="w-6 h-6 rounded-full bg-slate-50 border border-slate-200 text-slate-400 flex items-center justify-center">
+                        <div className="w-6 h-6 rounded-full bg-[#4E342E]/5 border border-[#4E342E]/15 text-[#8D6E63]/60 flex items-center justify-center">
                           <Lock className="w-3 h-3" />
                         </div>
                       )}
@@ -283,10 +283,10 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                       <span
                         className={`text-xs leading-tight truncate ${
                           isMastered
-                            ? "font-semibold text-slate-900"
+                            ? "font-semibold text-[#4E342E]"
                             : isCurrent
-                            ? "font-bold text-slate-900"
-                            : "font-semibold text-slate-400"
+                            ? "font-bold text-[#4E342E]"
+                            : "font-semibold text-[#8D6E63]/60"
                         }`}
                       >
                         {idx + 1}. {concept.name}
@@ -295,10 +295,10 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                         <span
                           className={`text-[11px] leading-normal line-clamp-2 ${
                             isCurrent
-                              ? "text-slate-500"
+                              ? "text-[#8D6E63]"
                               : isMastered
-                              ? "text-slate-500"
-                              : "text-slate-400"
+                              ? "text-[#8D6E63]"
+                              : "text-[#8D6E63]/50"
                           }`}
                         >
                           {concept.description}
@@ -317,9 +317,9 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                           isMenuOpen ? null : concept.id || null
                         );
                       }}
-                      className={`p-1 rounded-md hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 transition-all cursor-pointer ${
+                      className={`p-1 rounded-md hover:bg-[#4E342E]/10 text-[#8D6E63] hover:text-[#4E342E] transition-all cursor-pointer ${
                         isMenuOpen
-                          ? "opacity-100 bg-slate-200/80 text-slate-700"
+                          ? "opacity-100 bg-[#4E342E]/10 text-[#4E342E]"
                           : "opacity-0 group-hover:opacity-100"
                       }`}
                       title="Options"
@@ -330,15 +330,15 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                     {/* Dropdown Menu */}
                     {isMenuOpen && (
                       <div
-                        className="absolute right-0 top-7 w-28 bg-white border border-slate-200 rounded-md shadow-lg z-30 py-1 text-xs"
+                        className="absolute right-0 top-7 w-28 bg-[#FDF8F3] border border-[#4E342E]/15 rounded-xl shadow-lg z-30 py-1 text-xs"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
                           type="button"
                           onClick={() => handleStartRename(concept)}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-slate-700 hover:bg-slate-50 text-left transition-colors cursor-pointer"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-[#4E342E] hover:bg-[#4E342E]/10 text-left transition-colors cursor-pointer"
                         >
-                          <Pencil className="w-3 h-3 text-slate-400" />
+                          <Pencil className="w-3 h-3 text-[#8D6E63]" />
                           <span>Rename</span>
                         </button>
                         <button
@@ -347,9 +347,9 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({
                             setActiveMenuId(null);
                             setDeleteConfirmId(concept.id || null);
                           }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-red-600 hover:bg-red-50 text-left transition-colors cursor-pointer font-medium"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-[#E57373] hover:bg-[#E57373]/10 text-left transition-colors cursor-pointer font-medium"
                         >
-                          <Trash2 className="w-3 h-3 text-red-500" />
+                          <Trash2 className="w-3 h-3 text-[#E57373]" />
                           <span>Delete</span>
                         </button>
                       </div>
