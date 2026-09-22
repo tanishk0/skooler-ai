@@ -20,7 +20,7 @@ export const ContinueSection: React.FC<ContinueSectionProps> = ({
         type="button"
         disabled={isSubmitting}
         onClick={onContinue}
-        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition-all cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#4E342E] hover:bg-[#3D2924] active:bg-[#2E1F1B] text-white font-medium text-xs sm:text-sm shadow-sm transition-all cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {isSubmitting ? (
           <>

@@ -31,16 +31,16 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
     : "Review Recommended";
 
   const badgeBg = isMastered
-    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+    ? "bg-[#6B8F71]/15 text-[#6B8F71] border-[#6B8F71]/30"
     : isPartial
-    ? "bg-amber-50 text-amber-800 border-amber-200"
-    : "bg-red-50 text-red-800 border-red-200";
+    ? "bg-[#F4A261]/15 text-[#B45309] border-[#F4A261]/30"
+    : "bg-[#E57373]/15 text-[#C62828] border-[#E57373]/30";
 
   return (
-    <div className="w-full max-w-3xl rounded-md bg-white border border-slate-200 p-5 sm:p-6 shadow-2xs flex flex-col gap-4 font-sans my-4">
+    <div className="w-full max-w-3xl rounded-2xl bg-white border border-[#4E342E]/12 p-5 sm:p-6 shadow-sm flex flex-col gap-4 font-sans my-4">
       {/* Top Header Badge */}
       <div className="flex items-center justify-between">
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-xs font-semibold ${badgeBg}`}>
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-semibold ${badgeBg}`}>
           {isMastered ? (
             <CheckCircle2 className="w-3.5 h-3.5" />
           ) : (
@@ -51,11 +51,11 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
 
         <div className="flex items-center gap-3">
           {evaluation.nextAction && (
-            <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 uppercase tracking-wider">
+            <span className="text-[11px] font-semibold text-[#4E342E] bg-[#4E342E]/5 px-2.5 py-0.5 rounded-md border border-[#4E342E]/10 uppercase tracking-wider">
               {evaluation.nextAction.replace("_", " ")}
             </span>
           )}
-          <span className="text-xs font-mono text-slate-400">
+          <span className="text-xs font-mono text-[#8D6E63]">
             Confidence: {Math.round((evaluation.confidence || 0.8) * 100)}%
           </span>
         </div>
@@ -63,7 +63,7 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
 
       {/* Main Feedback Text */}
       {evaluation.feedback && (
-        <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-medium">
+        <p className="text-sm sm:text-base text-[#4E342E] leading-relaxed font-medium">
           {evaluation.feedback}
         </p>
       )}
@@ -71,11 +71,11 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
       {/* Misconceptions & Missing Concepts */}
       {((evaluation.misconceptions && evaluation.misconceptions.length > 0) ||
         (evaluation.missingConcepts && evaluation.missingConcepts.length > 0)) && (
-        <div className="flex flex-col gap-2 p-3.5 rounded-md bg-amber-50/60 border border-amber-200/80 text-xs text-amber-900">
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[#F4A261]/10 border border-[#F4A261]/25 text-xs text-[#4E342E]">
           {evaluation.misconceptions && evaluation.misconceptions.length > 0 && (
             <div>
               <strong className="font-semibold block mb-1">Misconception Identified:</strong>
-              <ul className="list-disc list-inside space-y-0.5 text-amber-800">
+              <ul className="list-disc list-inside space-y-0.5 text-[#8D6E63]">
                 {evaluation.misconceptions.map((m, idx) => (
                   <li key={idx}>{m}</li>
                 ))}
@@ -86,7 +86,7 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
           {evaluation.missingConcepts && evaluation.missingConcepts.length > 0 && (
             <div className="mt-1">
               <strong className="font-semibold block mb-1">Missing Key Concept:</strong>
-              <ul className="list-disc list-inside space-y-0.5 text-amber-800">
+              <ul className="list-disc list-inside space-y-0.5 text-[#8D6E63]">
                 {evaluation.missingConcepts.map((c, idx) => (
                   <li key={idx}>{c}</li>
                 ))}
@@ -97,14 +97,14 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
       )}
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-slate-100">
+      <div className="flex flex-wrap items-center justify-end gap-3 pt-2.5 border-t border-[#4E342E]/10">
         {!isMastered && onGetHint && (
           <button
             type="button"
             onClick={onGetHint}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#4E342E]/15 bg-[#FDF8F3] text-[#4E342E] hover:bg-[#4E342E]/5 text-xs font-medium transition-colors cursor-pointer"
           >
-            <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
+            <HelpCircle className="w-3.5 h-3.5 text-[#8D6E63]" />
             <span>Give Me a Hint</span>
           </button>
         )}
@@ -113,9 +113,9 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
           <button
             type="button"
             onClick={onTryAgain}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-[#4E342E]/15 bg-[#FDF8F3] text-[#4E342E] hover:bg-[#4E342E]/5 text-xs font-medium transition-colors cursor-pointer"
           >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#8D6E63]" />
             <span>Try Again</span>
           </button>
         )}
@@ -124,7 +124,7 @@ export const EvaluationCard: React.FC<EvaluationCardProps> = ({
           <button
             type="button"
             onClick={onNextConcept}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4E342E] hover:bg-[#3D2924] active:bg-[#2E1F1B] text-white font-medium text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
           >
             <span>Continue to Next Concept</span>
             <ArrowRight className="w-4 h-4" />
