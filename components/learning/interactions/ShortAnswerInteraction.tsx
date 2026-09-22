@@ -27,21 +27,21 @@ export const ShortAnswerInteraction: React.FC<ShortAnswerInteractionProps> = ({
   return (
     <div className={`w-full max-w-3xl rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col gap-3 font-sans my-4 border transition-all ${
       isActive
-        ? "bg-indigo-50/40 border-indigo-200/80 shadow-sm"
-        : "bg-zinc-50/60 border-zinc-200/80 opacity-90"
+        ? "bg-white border-[#4E342E]/15 shadow-sm"
+        : "bg-[#FDF8F3] border-[#4E342E]/10 opacity-90"
     }`}>
       {/* Header Badge */}
       <div className="flex items-center justify-between">
-        <span className={`text-xs font-bold tracking-wider uppercase ${isActive ? "text-indigo-600" : "text-zinc-500"}`}>
+        <span className={`text-xs font-bold tracking-wider uppercase ${isActive ? "text-[#4E342E]" : "text-[#8D6E63]"}`}>
           SHORT ANSWER
         </span>
-        <div className={`w-7 h-7 rounded-full flex items-center justify-center ${isActive ? "bg-indigo-100/80 text-indigo-600" : "bg-zinc-200/60 text-zinc-500"}`}>
+        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isActive ? "bg-[#4E342E]/10 text-[#4E342E]" : "bg-[#4E342E]/5 text-[#6B8F71]"}`}>
           <HelpCircle className="w-4 h-4" />
         </div>
       </div>
 
       {/* Question Prompt */}
-      <p className="text-sm sm:text-base font-medium text-zinc-900 leading-relaxed">
+      <p className="text-sm sm:text-base font-medium text-[#4E342E] leading-relaxed">
         {question}
       </p>
 
@@ -54,13 +54,13 @@ export const ShortAnswerInteraction: React.FC<ShortAnswerInteractionProps> = ({
             onChange={(e) => setAnswer(e.target.value)}
             disabled={isSubmitting}
             placeholder="Type concise answer..."
-            className="flex-1 bg-white border border-zinc-200 rounded-xl px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+            className="flex-1 bg-[#FDF8F3]/50 border border-[#4E342E]/15 rounded-xl px-4 py-2.5 text-sm text-[#4E342E] placeholder-[#8D6E63]/60 focus:outline-none focus:bg-white focus:border-[#4E342E] focus:ring-2 focus:ring-[#4E342E]/15 disabled:opacity-50 transition-all"
           />
 
           <button
             type="submit"
             disabled={isSubmitting || !answer.trim()}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-xs sm:text-sm shadow-md shadow-indigo-600/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4E342E] hover:bg-[#3D2924] active:bg-[#2E1F1B] text-white font-medium text-xs sm:text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shrink-0"
           >
             {isSubmitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -73,7 +73,7 @@ export const ShortAnswerInteraction: React.FC<ShortAnswerInteractionProps> = ({
           </button>
         </form>
       ) : (
-        <span className="text-xs text-zinc-400 font-medium pt-1">
+        <span className="text-xs text-[#8D6E63] font-medium pt-1">
           Question answered (Read-only)
         </span>
       )}
