@@ -91,22 +91,22 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150 font-sans">
       <div
-        className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-y-auto"
+        className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] bg-[#FDF8F3] rounded-2xl shadow-2xl border border-[#4E342E]/15 overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+        <div className="px-5 py-4 border-b border-[#4E342E]/10 flex items-center justify-between bg-[#FDF8F3]">
           <div>
-            <h2 className="font-semibold text-zinc-900 text-sm">
+            <h2 className="font-semibold text-[#4E342E] text-sm">
               Add to Collection
             </h2>
-            <p className="text-xs text-zinc-500 truncate max-w-[240px]">
+            <p className="text-xs text-[#8D6E63] truncate max-w-[240px]">
               {sessionTopic}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -115,14 +115,14 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
         {/* Content */}
         <div className="p-4 flex flex-col gap-3">
           {error && (
-            <div className="p-2.5 text-xs bg-red-50 border border-red-200 text-red-700 rounded-md">
+            <div className="p-2.5 text-xs bg-[#E57373]/10 border border-[#E57373]/30 text-[#E57373] rounded-xl font-medium">
               {error}
             </div>
           )}
 
           {isLoading ? (
-            <div className="py-8 flex flex-col items-center justify-center gap-2 text-zinc-400">
-              <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+            <div className="py-8 flex flex-col items-center justify-center gap-2 text-[#8D6E63]">
+              <Loader2 className="w-5 h-5 animate-spin text-[#4E342E]" />
               <span className="text-xs">Loading collections...</span>
             </div>
           ) : (
@@ -131,15 +131,15 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedId(null)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md text-xs transition-colors cursor-pointer text-left ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-colors cursor-pointer text-left ${
                   selectedId === null
-                    ? "bg-indigo-50 border border-indigo-200 text-indigo-900 font-medium"
-                    : "hover:bg-zinc-50 text-zinc-600"
+                    ? "bg-[#4E342E]/10 border border-[#4E342E]/20 text-[#4E342E] font-medium"
+                    : "hover:bg-[#4E342E]/5 text-[#4E342E]"
                 }`}
               >
                 <span>None (No Collection)</span>
                 {selectedId === null && (
-                  <Check className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <Check className="w-4 h-4 text-[#6B8F71] stroke-[2.5] shrink-0" />
                 )}
               </button>
 
@@ -151,18 +151,18 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
                     key={col.id}
                     type="button"
                     onClick={() => setSelectedId(col.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md text-xs transition-colors cursor-pointer text-left ${
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs transition-colors cursor-pointer text-left ${
                       isSelected
-                        ? "bg-indigo-50 border border-indigo-200 text-indigo-900 font-medium"
-                        : "hover:bg-zinc-50 text-zinc-700"
+                        ? "bg-[#4E342E]/10 border border-[#4E342E]/20 text-[#4E342E] font-medium"
+                        : "hover:bg-[#4E342E]/5 text-[#4E342E]"
                     }`}
                   >
-                    <div className="flex items-center gap-2 truncate pr-2">
-                      <Folder className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <div className="flex items-center gap-2.5 truncate pr-2">
+                      <Folder className="w-4 h-4 text-[#4E342E] shrink-0 stroke-[1.8]" />
                       <span className="truncate">{col.name}</span>
                     </div>
                     {isSelected && (
-                      <Check className="w-4 h-4 text-indigo-600 shrink-0" />
+                      <Check className="w-4 h-4 text-[#6B8F71] stroke-[2.5] shrink-0" />
                     )}
                   </button>
                 );
@@ -178,19 +178,19 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
                 onClose();
                 onOpenCreateCollection();
               }}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md border border-dashed border-zinc-300 text-xs font-medium text-indigo-600 hover:bg-indigo-50/50 hover:border-indigo-300 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-dashed border-[#4E342E]/25 text-xs font-semibold text-[#4E342E] hover:bg-[#4E342E]/5 hover:border-[#4E342E]/40 transition-colors cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5 stroke-[2.2]" />
               <span>Create New Collection</span>
             </button>
           )}
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-100 mt-1">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#4E342E]/10 mt-1">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-800 hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 text-xs font-medium text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 rounded-xl transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -198,7 +198,7 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
               type="button"
               onClick={handleSave}
               disabled={isSubmitting}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-all shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-[#4E342E] hover:bg-[#3D2924] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-xs cursor-pointer active:scale-[0.99]"
             >
               {isSubmitting ? (
                 <>

@@ -74,20 +74,20 @@ export const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150 font-sans">
       <div
-        className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-y-auto"
+        className="w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] bg-[#FDF8F3] rounded-2xl shadow-2xl border border-[#4E342E]/15 overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-          <div className="flex items-center gap-2">
-            <FolderPlus className="w-5 h-5 text-indigo-600 shrink-0" />
-            <h2 className="font-semibold text-zinc-900 text-base">
+        <div className="px-5 py-4 border-b border-[#4E342E]/10 flex items-center justify-between bg-[#FDF8F3]">
+          <div className="flex items-center gap-2.5">
+            <FolderPlus className="w-5 h-5 text-[#4E342E] shrink-0 stroke-[1.8]" />
+            <h2 className="font-semibold text-[#4E342E] text-base">
               Create Collection
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -96,14 +96,14 @@ export const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
         {/* Body Form */}
         <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
           {error && (
-            <div className="p-3 text-xs bg-red-50 border border-red-200 text-red-700 rounded-md">
+            <div className="p-3 text-xs bg-[#E57373]/10 border border-[#E57373]/30 text-[#E57373] rounded-xl font-medium">
               {error}
             </div>
           )}
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-zinc-700">
-              Collection Name <span className="text-red-500">*</span>
+            <label className="text-xs font-semibold text-[#4E342E]">
+              Collection Name <span className="text-[#E57373]">*</span>
             </label>
             <input
               type="text"
@@ -112,14 +112,14 @@ export const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
               placeholder="e.g. Web Development, Machine Learning"
               maxLength={100}
               autoFocus
-              className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md text-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all bg-white"
+              className="w-full px-3.5 py-2 text-sm border border-[#4E342E]/20 rounded-xl text-[#4E342E] placeholder-[#8D6E63]/60 focus:outline-none focus:ring-2 focus:ring-[#4E342E]/15 focus:border-[#4E342E] transition-all bg-white"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-zinc-700 flex items-center justify-between">
+            <label className="text-xs font-semibold text-[#4E342E] flex items-center justify-between">
               <span>Description</span>
-              <span className="text-[10px] text-zinc-400">Optional</span>
+              <span className="text-[10px] text-[#8D6E63]">Optional</span>
             </label>
             <textarea
               value={description}
@@ -127,23 +127,23 @@ export const CreateCollectionModal: React.FC<CreateCollectionModalProps> = ({
               placeholder="A brief description of topics in this collection..."
               rows={3}
               maxLength={300}
-              className="w-full px-3 py-2 text-sm border border-zinc-300 rounded-md text-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all resize-none bg-white"
+              className="w-full px-3.5 py-2 text-sm border border-[#4E342E]/20 rounded-xl text-[#4E342E] placeholder-[#8D6E63]/60 focus:outline-none focus:ring-2 focus:ring-[#4E342E]/15 focus:border-[#4E342E] transition-all resize-none bg-white"
             />
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-zinc-100 mt-1">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#4E342E]/10 mt-1">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-zinc-600 hover:text-zinc-800 hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
+              className="px-4 py-2 text-xs font-medium text-[#8D6E63] hover:text-[#4E342E] hover:bg-[#4E342E]/10 rounded-xl transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !name.trim()}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-all shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#4E342E] hover:bg-[#3D2924] disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-xs cursor-pointer active:scale-[0.99]"
             >
               {isSubmitting ? (
                 <>
