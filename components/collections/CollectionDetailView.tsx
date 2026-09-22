@@ -8,6 +8,7 @@ import DrawerOverlay from "@/components/layout/DrawerOverlay";
 import LearningInput from "@/components/learning/LearningInput";
 import AddToCollectionModal from "./AddToCollectionModal";
 import CreateCollectionModal from "./CreateCollectionModal";
+import ModuleBuildingProgress from "@/components/learning/ModuleBuildingProgress";
 import {
   Folder,
   Plus,
@@ -63,6 +64,8 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
   const [sidebarRecents, setSidebarRecents] = useState<RecentItem[]>(initialSidebarRecents);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [buildingTopic, setBuildingTopic] = useState("");
+  const [isModuleReady, setIsModuleReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -82,9 +85,12 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
 
   // Start Learning inside collection
   const handleStartLearning = async (data: { text: string; files: File[] }) => {
-    if (!data.text.trim()) return;
+    const topicText = data.text.trim();
+    if (!topicText) return;
 
+    setBuildingTopic(topicText);
     setIsLoading(true);
+    setIsModuleReady(false);
     setError(null);
 
     try {
@@ -92,7 +98,7 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          topic: data.text.trim(),
+          topic: topicText,
           collectionId: collection.id,
         }),
       });
@@ -104,14 +110,16 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
       }
 
       if (json.sessionId) {
-        router.push(`/learn/${json.sessionId}`);
+        setIsModuleReady(true);
+        setTimeout(() => {
+          router.push(`/learn/${json.sessionId}`);
+        }, 600);
       } else {
         throw new Error("No session ID returned");
       }
     } catch (err) {
       console.error("Error starting learning session:", err);
       setError((err as Error).message || "An unexpected error occurred.");
-      setIsLoading(false);
     }
   };
 
@@ -564,9 +572,9 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
                       </div>
 
                       <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-100 text-[11px] text-zinc-500">
-                        <span>
+                        <span suppressHydrationWarning>
                           Updated{" "}
-                          {new Date(s.updatedAt).toLocaleDateString(undefined, {
+                          {new Date(s.updatedAt).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                           })}
@@ -655,6 +663,20 @@ export const CollectionDetailView: React.FC<CollectionDetailViewProps> = ({
           onOpenCreateCollection={() => setIsCreateModalOpen(true)}
         />
       )}
+
+      {/* AI Module Generation Progress Modal */}
+      <ModuleBuildingProgress
+        isOpen={isLoading}
+        topic={buildingTopic}
+        mode="modal"
+        type="new_module"
+        isCompleted={isModuleReady}
+        error={error}
+        onClose={() => {
+          setIsLoading(false);
+          setError(null);
+        }}
+      />
     </div>
   );
 };

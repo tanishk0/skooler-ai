@@ -8,6 +8,7 @@ import DrawerOverlay from "@/components/layout/DrawerOverlay";
 import LearningInput from "@/components/learning/LearningInput";
 import CreateCollectionModal from "@/components/collections/CreateCollectionModal";
 import AddToCollectionModal from "@/components/collections/AddToCollectionModal";
+import ModuleBuildingProgress from "@/components/learning/ModuleBuildingProgress";
 import {
   Plus,
   AlertCircle,
@@ -39,9 +40,26 @@ interface DashboardViewProps {
   initialCollections?: DashboardCollectionItem[];
 }
 
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
 const getRelativeTimeAgo = (date?: string) => {
   if (!date) return "Recently";
-  const diffMs = Date.now() - new Date(date).getTime();
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "Recently";
+  const diffMs = Date.now() - d.getTime();
   const minutes = Math.floor(diffMs / 60000);
   if (minutes < 1) return "Just now";
   if (minutes < 60) return `${minutes} min ago`;
@@ -50,7 +68,7 @@ const getRelativeTimeAgo = (date?: string) => {
   const days = Math.floor(hours / 24);
   if (days === 1) return "Yesterday";
   if (days < 7) return `${days} days ago`;
-  return new Date(date).toLocaleDateString();
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 };
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -60,6 +78,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [buildingTopic, setBuildingTopic] = useState("");
+  const [isModuleReady, setIsModuleReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -83,9 +103,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [addToColSession, setAddToColSession] = useState<RecentItem | null>(null);
 
   const handleStartLearning = async (data: { text: string; files: File[] }) => {
-    if (!data.text.trim()) return;
+    const topicText = data.text.trim();
+    if (!topicText) return;
 
+    setBuildingTopic(topicText);
     setIsLoading(true);
+    setIsModuleReady(false);
     setError(null);
 
     try {
@@ -94,7 +117,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ topic: data.text.trim() }),
+        body: JSON.stringify({ topic: topicText }),
       });
 
       const json = await res.json();
@@ -104,14 +127,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       }
 
       if (json.sessionId) {
-        router.push(`/learn/${json.sessionId}`);
+        setIsModuleReady(true);
+        setTimeout(() => {
+          router.push(`/learn/${json.sessionId}`);
+        }, 600);
       } else {
         throw new Error("No session ID returned");
       }
     } catch (err) {
       console.error("Error starting learning session:", err);
       setError((err as Error).message || "An unexpected error occurred.");
-      setIsLoading(false);
     }
   };
 
@@ -364,7 +389,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       )}
 
                       <div className="flex items-center justify-between text-xs min-w-0">
-                        <span className="text-slate-400 text-[11px] truncate pr-2">
+                        <span
+                          className="text-slate-400 text-[11px] truncate pr-2"
+                          suppressHydrationWarning
+                        >
                           {lastStudied}
                         </span>
                         <ArrowRight className="w-4 h-4 text-indigo-600 group-hover:translate-x-1 transition-transform shrink-0" />
@@ -424,7 +452,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         {item.title}
                       </h4>
                       {item.timeAgo && (
-                        <p className="text-[11px] text-slate-400 sm:hidden">
+                        <p
+                          className="text-[11px] text-slate-400 sm:hidden"
+                          suppressHydrationWarning
+                        >
                           {item.timeAgo}
                         </p>
                       )}
@@ -446,7 +477,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     )}
 
                     {/* Relative Date (desktop) */}
-                    <span className="hidden sm:inline text-xs text-slate-400 text-right shrink-0">
+                    <span
+                      className="hidden sm:inline text-xs text-slate-400 text-right shrink-0"
+                      suppressHydrationWarning
+                    >
                       {item.timeAgo || "Recently"}
                     </span>
 
@@ -489,6 +523,20 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           onOpenCreateCollection={() => setIsCreateModalOpen(true)}
         />
       )}
+
+      {/* AI Module Generation Progress Modal */}
+      <ModuleBuildingProgress
+        isOpen={isLoading}
+        topic={buildingTopic}
+        mode="modal"
+        type="new_module"
+        isCompleted={isModuleReady}
+        error={error}
+        onClose={() => {
+          setIsLoading(false);
+          setError(null);
+        }}
+      />
     </div>
   );
 };
